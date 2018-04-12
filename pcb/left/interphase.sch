@@ -1,0 +1,1321 @@
+EESchema Schematic File Version 2
+LIBS:interphase-rescue
+LIBS:Switch
+LIBS:keyboard_parts
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:core51822b
+LIBS:switches
+LIBS:mcp1640
+LIBS:interphase-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Battery_Cell BT1
+U 1 1 59BBF201
+P 700 5600
+F 0 "BT1" H 800 5700 50  0000 L CNN
+F 1 "Battery_Cell" H 800 5600 50  0000 L CNN
+F 2 "Battery_Holders:Keystone_106_1x20mm-CoinCell" V 700 5660 50  0001 C CNN
+F 3 "" V 700 5660 50  0001 C CNN
+	1    700  5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR01
+U 1 1 59BBF369
+P 34400 -7050
+F 0 "#PWR01" H 34400 -7200 50  0001 C CNN
+F 1 "+3.3V" H 34400 -6910 50  0000 C CNN
+F 2 "" H 34400 -7050 50  0001 C CNN
+F 3 "" H 34400 -7050 50  0001 C CNN
+	1    34400 -7050
+	1    0    0    -1  
+$EndComp
+$Comp
+L MCP1640 U2
+U 1 1 59BFA9D7
+P 2350 5400
+F 0 "U2" H 2450 5800 60  0000 C CNN
+F 1 "MCP1640" H 2550 4950 60  0000 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23-6" H 2350 5400 60  0001 C CNN
+F 3 "" H 2350 5400 60  0001 C CNN
+	1    2350 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L C-RESCUE-interphase C1
+U 1 1 59BFAAF6
+P 1450 5550
+F 0 "C1" H 1475 5650 50  0000 L CNN
+F 1 "4,7µF" H 1475 5450 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805_HandSoldering" H 1488 5400 50  0001 C CNN
+F 3 "" H 1450 5550 50  0001 C CNN
+	1    1450 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L L L1
+U 1 1 59BFAB7F
+P 1800 4900
+F 0 "L1" V 1750 4900 50  0000 C CNN
+F 1 "4,7µH" V 1875 4900 50  0000 C CNN
+F 2 "SMD_Packages:SMD-1206_Pol" H 1800 4900 50  0001 C CNN
+F 3 "" H 1800 4900 50  0001 C CNN
+	1    1800 4900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R-RESCUE-interphase R1
+U 1 1 59BFABC2
+P 2950 5250
+F 0 "R1" V 3030 5250 50  0000 C CNN
+F 1 "536K" V 2950 5250 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 2880 5250 50  0001 C CNN
+F 3 "" H 2950 5250 50  0001 C CNN
+	1    2950 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L R-RESCUE-interphase R2
+U 1 1 59BFAC0F
+P 2950 5650
+F 0 "R2" V 3030 5650 50  0000 C CNN
+F 1 "309K" V 2950 5650 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 2880 5650 50  0001 C CNN
+F 3 "" H 2950 5650 50  0001 C CNN
+	1    2950 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L C-RESCUE-interphase C2
+U 1 1 59BFAC64
+P 3350 5450
+F 0 "C2" H 3375 5550 50  0000 L CNN
+F 1 "10µF" H 3375 5350 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805_HandSoldering" H 3388 5300 50  0001 C CNN
+F 3 "" H 3350 5450 50  0001 C CNN
+	1    3350 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW32
+U 1 1 59BFB4E3
+P 10600 950
+F 0 "SW32" H 10675 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 10675 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10675 775 40  0001 L TNN
+F 3 "" H 10500 1050 60  0001 C CNN
+F 4 "-" H 10675 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 10675 1250 40  0001 L BNN "Family"
+	1    10600 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW27
+U 1 1 59BFB5D8
+P 10000 950
+F 0 "SW27" H 10075 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 10075 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10075 775 40  0001 L TNN
+F 3 "" H 9900 1050 60  0001 C CNN
+F 4 "-" H 10075 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 10075 1250 40  0001 L BNN "Family"
+	1    10000 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW22
+U 1 1 59BFB673
+P 9400 950
+F 0 "SW22" H 9475 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 9475 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 9475 775 40  0001 L TNN
+F 3 "" H 9300 1050 60  0001 C CNN
+F 4 "-" H 9475 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 9475 1250 40  0001 L BNN "Family"
+	1    9400 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW17
+U 1 1 59BFB70A
+P 8800 950
+F 0 "SW17" H 8875 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 8875 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8875 775 40  0001 L TNN
+F 3 "" H 8700 1050 60  0001 C CNN
+F 4 "-" H 8875 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 8875 1250 40  0001 L BNN "Family"
+	1    8800 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW12
+U 1 1 59BFB77F
+P 8200 950
+F 0 "SW12" H 8275 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 8275 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8275 775 40  0001 L TNN
+F 3 "" H 8100 1050 60  0001 C CNN
+F 4 "-" H 8275 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 8275 1250 40  0001 L BNN "Family"
+	1    8200 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW7
+U 1 1 59BFB7F0
+P 7600 950
+F 0 "SW7" H 7675 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 7675 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 7675 775 40  0001 L TNN
+F 3 "" H 7500 1050 60  0001 C CNN
+F 4 "-" H 7675 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 7675 1250 40  0001 L BNN "Family"
+	1    7600 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW2
+U 1 1 59BFB879
+P 7000 950
+F 0 "SW2" H 7075 1050 60  0000 L BNB
+F 1 "MOM-SPST" H 7075 850 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 7075 775 40  0001 L TNN
+F 3 "" H 6900 1050 60  0001 C CNN
+F 4 "-" H 7075 1150 40  0001 L BNN "Part"
+F 5 "Switch" H 7075 1250 40  0001 L BNN "Family"
+	1    7000 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW28
+U 1 1 59BFBA92
+P 10000 1550
+F 0 "SW28" H 10075 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 10075 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10075 1375 40  0001 L TNN
+F 3 "" H 9900 1650 60  0001 C CNN
+F 4 "-" H 10075 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 10075 1850 40  0001 L BNN "Family"
+	1    10000 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW23
+U 1 1 59BFBA9A
+P 9400 1550
+F 0 "SW23" H 9475 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 9475 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 9475 1375 40  0001 L TNN
+F 3 "" H 9300 1650 60  0001 C CNN
+F 4 "-" H 9475 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 9475 1850 40  0001 L BNN "Family"
+	1    9400 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW18
+U 1 1 59BFBAA2
+P 8800 1550
+F 0 "SW18" H 8875 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 8875 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8875 1375 40  0001 L TNN
+F 3 "" H 8700 1650 60  0001 C CNN
+F 4 "-" H 8875 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 8875 1850 40  0001 L BNN "Family"
+	1    8800 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW13
+U 1 1 59BFBAAA
+P 8200 1550
+F 0 "SW13" H 8275 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 8275 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8275 1375 40  0001 L TNN
+F 3 "" H 8100 1650 60  0001 C CNN
+F 4 "-" H 8275 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 8275 1850 40  0001 L BNN "Family"
+	1    8200 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW8
+U 1 1 59BFBAB2
+P 7600 1550
+F 0 "SW8" H 7675 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 7675 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 7675 1375 40  0001 L TNN
+F 3 "" H 7500 1650 60  0001 C CNN
+F 4 "-" H 7675 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 7675 1850 40  0001 L BNN "Family"
+	1    7600 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW3
+U 1 1 59BFBABA
+P 7000 1550
+F 0 "SW3" H 7075 1650 60  0000 L BNB
+F 1 "MOM-SPST" H 7075 1450 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.50u_PCB" H 7075 1650 60  0001 L BNB
+F 3 "" H 6900 1650 60  0001 C CNN
+F 4 "-" H 7075 1750 40  0001 L BNN "Part"
+F 5 "Switch" H 7075 1850 40  0001 L BNN "Family"
+	1    7000 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW29
+U 1 1 59BFC0BA
+P 10000 2150
+F 0 "SW29" H 10075 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 10075 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10075 1975 40  0001 L TNN
+F 3 "" H 9900 2250 60  0001 C CNN
+F 4 "-" H 10075 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 10075 2450 40  0001 L BNN "Family"
+	1    10000 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW24
+U 1 1 59BFC0C2
+P 9400 2150
+F 0 "SW24" H 9475 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 9475 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 9475 1975 40  0001 L TNN
+F 3 "" H 9300 2250 60  0001 C CNN
+F 4 "-" H 9475 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 9475 2450 40  0001 L BNN "Family"
+	1    9400 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW19
+U 1 1 59BFC0CA
+P 8800 2150
+F 0 "SW19" H 8875 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 8875 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8875 1975 40  0001 L TNN
+F 3 "" H 8700 2250 60  0001 C CNN
+F 4 "-" H 8875 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 8875 2450 40  0001 L BNN "Family"
+	1    8800 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW14
+U 1 1 59BFC0D2
+P 8200 2150
+F 0 "SW14" H 8275 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 8275 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8275 1975 40  0001 L TNN
+F 3 "" H 8100 2250 60  0001 C CNN
+F 4 "-" H 8275 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 8275 2450 40  0001 L BNN "Family"
+	1    8200 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW9
+U 1 1 59BFC0DA
+P 7600 2150
+F 0 "SW9" H 7675 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 7675 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 7675 1975 40  0001 L TNN
+F 3 "" H 7500 2250 60  0001 C CNN
+F 4 "-" H 7675 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 7675 2450 40  0001 L BNN "Family"
+	1    7600 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW4
+U 1 1 59BFC0E2
+P 7000 2150
+F 0 "SW4" H 7075 2250 60  0000 L BNB
+F 1 "MOM-SPST" H 7075 2050 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.75u_PCB" H 7075 1975 40  0001 L TNN
+F 3 "" H 6900 2250 60  0001 C CNN
+F 4 "-" H 7075 2350 40  0001 L BNN "Part"
+F 5 "Switch" H 7075 2450 40  0001 L BNN "Family"
+	1    7000 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW30
+U 1 1 59BFC0F2
+P 10000 2750
+F 0 "SW30" H 10075 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 10075 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10075 2575 40  0001 L TNN
+F 3 "" H 9900 2850 60  0001 C CNN
+F 4 "-" H 10075 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 10075 3050 40  0001 L BNN "Family"
+	1    10000 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW25
+U 1 1 59BFC0FA
+P 9400 2750
+F 0 "SW25" H 9475 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 9475 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 9475 2575 40  0001 L TNN
+F 3 "" H 9300 2850 60  0001 C CNN
+F 4 "-" H 9475 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 9475 3050 40  0001 L BNN "Family"
+	1    9400 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW20
+U 1 1 59BFC102
+P 8800 2750
+F 0 "SW20" H 8875 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 8875 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8875 2575 40  0001 L TNN
+F 3 "" H 8700 2850 60  0001 C CNN
+F 4 "-" H 8875 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 8875 3050 40  0001 L BNN "Family"
+	1    8800 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW15
+U 1 1 59BFC10A
+P 8200 2750
+F 0 "SW15" H 8275 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 8275 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8275 2575 40  0001 L TNN
+F 3 "" H 8100 2850 60  0001 C CNN
+F 4 "-" H 8275 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 8275 3050 40  0001 L BNN "Family"
+	1    8200 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW5
+U 1 1 59BFC11A
+P 7000 2750
+F 0 "SW5" H 7075 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 7075 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_2.25u_PCB" H 7075 2575 40  0001 L TNN
+F 3 "" H 6900 2850 60  0001 C CNN
+F 4 "-" H 7075 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 7075 3050 40  0001 L BNN "Family"
+	1    7000 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW21
+U 1 1 59BFC364
+P 8800 3350
+F 0 "SW21" H 8875 3450 60  0000 L BNB
+F 1 "MOM-SPST" H 8875 3250 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 8875 3175 40  0001 L TNN
+F 3 "" H 8700 3450 60  0001 C CNN
+F 4 "-" H 8875 3550 40  0001 L BNN "Part"
+F 5 "Switch" H 8875 3650 40  0001 L BNN "Family"
+	1    8800 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW16
+U 1 1 59BFC36C
+P 8200 3350
+F 0 "SW16" H 8275 3450 60  0000 L BNB
+F 1 "MOM-SPST" H 8275 3250 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.25u_PCB" H 8275 3175 40  0001 L TNN
+F 3 "" H 8100 3450 60  0001 C CNN
+F 4 "-" H 8275 3550 40  0001 L BNN "Part"
+F 5 "Switch" H 8275 3650 40  0001 L BNN "Family"
+	1    8200 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW11
+U 1 1 59BFC374
+P 7600 3350
+F 0 "SW11" H 7675 3450 60  0000 L BNB
+F 1 "MOM-SPST" H 7675 3250 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.50u_PCB" H 7675 3175 40  0001 L TNN
+F 3 "" H 7500 3450 60  0001 C CNN
+F 4 "-" H 7675 3550 40  0001 L BNN "Part"
+F 5 "Switch" H 7675 3650 40  0001 L BNN "Family"
+	1    7600 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D1
+U 1 1 59BFE840
+P 7250 950
+F 0 "D1" H 7250 1050 50  0000 C CNN
+F 1 "D" H 7250 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7250 950 50  0001 C CNN
+F 3 "" H 7250 950 50  0001 C CNN
+	1    7250 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D6
+U 1 1 59BFE952
+P 7850 950
+F 0 "D6" H 7850 1050 50  0000 C CNN
+F 1 "D" H 7850 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7850 950 50  0001 C CNN
+F 3 "" H 7850 950 50  0001 C CNN
+	1    7850 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D11
+U 1 1 59BFEA33
+P 8450 950
+F 0 "D11" H 8450 1050 50  0000 C CNN
+F 1 "D" H 8450 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 8450 950 50  0001 C CNN
+F 3 "" H 8450 950 50  0001 C CNN
+	1    8450 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D16
+U 1 1 59BFEB01
+P 9050 950
+F 0 "D16" H 9050 1050 50  0000 C CNN
+F 1 "D" H 9050 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9050 950 50  0001 C CNN
+F 3 "" H 9050 950 50  0001 C CNN
+	1    9050 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D21
+U 1 1 59BFEBBA
+P 9650 950
+F 0 "D21" H 9650 1050 50  0000 C CNN
+F 1 "D" H 9650 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9650 950 50  0001 C CNN
+F 3 "" H 9650 950 50  0001 C CNN
+	1    9650 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D26
+U 1 1 59BFEC74
+P 10250 950
+F 0 "D26" H 10250 1050 50  0000 C CNN
+F 1 "D" H 10250 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10250 950 50  0001 C CNN
+F 3 "" H 10250 950 50  0001 C CNN
+	1    10250 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D31
+U 1 1 59BFED2F
+P 10850 950
+F 0 "D31" H 10850 1050 50  0000 C CNN
+F 1 "D" H 10850 850 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10850 950 50  0001 C CNN
+F 3 "" H 10850 950 50  0001 C CNN
+	1    10850 950 
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D2
+U 1 1 59C1093A
+P 7250 1550
+F 0 "D2" H 7250 1650 50  0000 C CNN
+F 1 "D" H 7250 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7250 1550 50  0001 C CNN
+F 3 "" H 7250 1550 50  0001 C CNN
+	1    7250 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D7
+U 1 1 59C109FC
+P 7850 1550
+F 0 "D7" H 7850 1650 50  0000 C CNN
+F 1 "D" H 7850 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7850 1550 50  0001 C CNN
+F 3 "" H 7850 1550 50  0001 C CNN
+	1    7850 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D3
+U 1 1 59C10ACB
+P 7250 2150
+F 0 "D3" H 7250 2250 50  0000 C CNN
+F 1 "D" H 7250 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7250 2150 50  0001 C CNN
+F 3 "" H 7250 2150 50  0001 C CNN
+	1    7250 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D4
+U 1 1 59C10BA9
+P 7250 2750
+F 0 "D4" H 7250 2850 50  0000 C CNN
+F 1 "D" H 7250 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7250 2750 50  0001 C CNN
+F 3 "" H 7250 2750 50  0001 C CNN
+	1    7250 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D8
+U 1 1 59C10D48
+P 7850 2150
+F 0 "D8" H 7850 2250 50  0000 C CNN
+F 1 "D" H 7850 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7850 2150 50  0001 C CNN
+F 3 "" H 7850 2150 50  0001 C CNN
+	1    7850 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D10
+U 1 1 59C10EF1
+P 7850 3350
+F 0 "D10" H 7850 3450 50  0000 C CNN
+F 1 "D" H 7850 3250 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7850 3350 50  0001 C CNN
+F 3 "" H 7850 3350 50  0001 C CNN
+	1    7850 3350
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D12
+U 1 1 59C10FCA
+P 8450 1550
+F 0 "D12" H 8450 1650 50  0000 C CNN
+F 1 "D" H 8450 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 8450 1550 50  0001 C CNN
+F 3 "" H 8450 1550 50  0001 C CNN
+	1    8450 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D13
+U 1 1 59C110A6
+P 8450 2150
+F 0 "D13" H 8450 2250 50  0000 C CNN
+F 1 "D" H 8450 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 8450 2150 50  0001 C CNN
+F 3 "" H 8450 2150 50  0001 C CNN
+	1    8450 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D14
+U 1 1 59C11185
+P 8450 2750
+F 0 "D14" H 8450 2850 50  0000 C CNN
+F 1 "D" H 8450 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 8450 2750 50  0001 C CNN
+F 3 "" H 8450 2750 50  0001 C CNN
+	1    8450 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D15
+U 1 1 59C1126F
+P 8450 3350
+F 0 "D15" H 8450 3450 50  0000 C CNN
+F 1 "D" H 8450 3250 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 8450 3350 50  0001 C CNN
+F 3 "" H 8450 3350 50  0001 C CNN
+	1    8450 3350
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D20
+U 1 1 59C11350
+P 9050 3350
+F 0 "D20" H 9050 3450 50  0000 C CNN
+F 1 "D" H 9050 3250 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9050 3350 50  0001 C CNN
+F 3 "" H 9050 3350 50  0001 C CNN
+	1    9050 3350
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D19
+U 1 1 59C11436
+P 9050 2750
+F 0 "D19" H 9050 2850 50  0000 C CNN
+F 1 "D" H 9050 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9050 2750 50  0001 C CNN
+F 3 "" H 9050 2750 50  0001 C CNN
+	1    9050 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D18
+U 1 1 59C11521
+P 9050 2150
+F 0 "D18" H 9050 2250 50  0000 C CNN
+F 1 "D" H 9050 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9050 2150 50  0001 C CNN
+F 3 "" H 9050 2150 50  0001 C CNN
+	1    9050 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D17
+U 1 1 59C1160F
+P 9050 1550
+F 0 "D17" H 9050 1650 50  0000 C CNN
+F 1 "D" H 9050 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9050 1550 50  0001 C CNN
+F 3 "" H 9050 1550 50  0001 C CNN
+	1    9050 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D22
+U 1 1 59C11702
+P 9650 1550
+F 0 "D22" H 9650 1650 50  0000 C CNN
+F 1 "D" H 9650 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9650 1550 50  0001 C CNN
+F 3 "" H 9650 1550 50  0001 C CNN
+	1    9650 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D23
+U 1 1 59C11806
+P 9650 2150
+F 0 "D23" H 9650 2250 50  0000 C CNN
+F 1 "D" H 9650 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9650 2150 50  0001 C CNN
+F 3 "" H 9650 2150 50  0001 C CNN
+	1    9650 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D24
+U 1 1 59C118F7
+P 9650 2750
+F 0 "D24" H 9650 2850 50  0000 C CNN
+F 1 "D" H 9650 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9650 2750 50  0001 C CNN
+F 3 "" H 9650 2750 50  0001 C CNN
+	1    9650 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D25
+U 1 1 59C119ED
+P 9650 3350
+F 0 "D25" H 9650 3450 50  0000 C CNN
+F 1 "D" H 9650 3250 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 9650 3350 50  0001 C CNN
+F 3 "" H 9650 3350 50  0001 C CNN
+	1    9650 3350
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D29
+U 1 1 59C11DEF
+P 10250 2750
+F 0 "D29" H 10250 2850 50  0000 C CNN
+F 1 "D" H 10250 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10250 2750 50  0001 C CNN
+F 3 "" H 10250 2750 50  0001 C CNN
+	1    10250 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D28
+U 1 1 59C11EF4
+P 10250 2150
+F 0 "D28" H 10250 2250 50  0000 C CNN
+F 1 "D" H 10250 2050 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10250 2150 50  0001 C CNN
+F 3 "" H 10250 2150 50  0001 C CNN
+	1    10250 2150
+	-1   0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D27
+U 1 1 59C12002
+P 10250 1550
+F 0 "D27" H 10250 1650 50  0000 C CNN
+F 1 "D" H 10250 1450 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10250 1550 50  0001 C CNN
+F 3 "" H 10250 1550 50  0001 C CNN
+	1    10250 1550
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR02
+U 1 1 59C15857
+P 3350 4900
+F 0 "#PWR02" H 3350 4750 50  0001 C CNN
+F 1 "+3.3V" H 3350 5040 50  0000 C CNN
+F 2 "" H 3350 4900 50  0001 C CNN
+F 3 "" H 3350 4900 50  0001 C CNN
+	1    3350 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR03
+U 1 1 59C23F89
+P 3750 2300
+F 0 "#PWR03" H 3750 2050 50  0001 C CNN
+F 1 "GND" H 3750 2150 50  0000 C CNN
+F 2 "" H 3750 2300 50  0001 C CNN
+F 3 "" H 3750 2300 50  0001 C CNN
+	1    3750 2300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Conn_01x04_Male J1
+U 1 1 59C3A25B
+P 3350 1700
+F 0 "J1" H 3350 1900 50  0000 C CNN
+F 1 "Conn_01x04_Male" H 3350 1400 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x04_Pitch2.54mm" H 3350 1700 50  0001 C CNN
+F 3 "" H 3350 1700 50  0001 C CNN
+	1    3350 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR04
+U 1 1 59CC64DF
+P 3750 1250
+F 0 "#PWR04" H 3750 1100 50  0001 C CNN
+F 1 "+3.3V" H 3750 1390 50  0000 C CNN
+F 2 "" H 3750 1250 50  0001 C CNN
+F 3 "" H 3750 1250 50  0001 C CNN
+	1    3750 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR05
+U 1 1 59CC64E5
+P 4300 5750
+F 0 "#PWR05" H 4300 5500 50  0001 C CNN
+F 1 "GND" H 4300 5600 50  0000 C CNN
+F 2 "" H 4300 5750 50  0001 C CNN
+F 3 "" H 4300 5750 50  0001 C CNN
+	1    4300 5750
+	1    0    0    -1  
+$EndComp
+$Comp
+L +BATT #PWR06
+U 1 1 59CD076E
+P 5050 6150
+F 0 "#PWR06" H 5050 6000 50  0001 C CNN
+F 1 "+BATT" H 5050 6290 50  0000 C CNN
+F 2 "" H 5050 6150 50  0001 C CNN
+F 3 "" H 5050 6150 50  0001 C CNN
+	1    5050 6150
+	1    0    0    -1  
+$EndComp
+$Comp
+L +BATT #PWR07
+U 1 1 59CD0834
+P 1050 4950
+F 0 "#PWR07" H 1050 4800 50  0001 C CNN
+F 1 "+BATT" H 1050 5090 50  0000 C CNN
+F 2 "" H 1050 4950 50  0001 C CNN
+F 3 "" H 1050 4950 50  0001 C CNN
+	1    1050 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR08
+U 1 1 59CFE3BD
+P 5850 5050
+F 0 "#PWR08" H 5850 4900 50  0001 C CNN
+F 1 "+3.3V" H 5850 5190 50  0000 C CNN
+F 2 "" H 5850 5050 50  0001 C CNN
+F 3 "" H 5850 5050 50  0001 C CNN
+	1    5850 5050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Core51822B U1
+U 1 1 59B7D1A9
+P 4800 4200
+F 0 "U1" H 4800 4300 60  0000 C CNN
+F 1 "Core51822B" H 4800 4150 60  0000 C CNN
+F 2 "Misc:Core51822(B)" H 4800 4300 60  0001 C CNN
+F 3 "" H 4800 4300 60  0001 C CNN
+	1    4800 4200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L MOM-SPST SW10
+U 1 1 5ACC6B6E
+P 7650 2750
+F 0 "SW10" H 7725 2850 60  0000 L BNB
+F 1 "MOM-SPST" H 7725 2650 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 7725 2575 40  0001 L TNN
+F 3 "" H 7550 2850 60  0001 C CNN
+F 4 "-" H 7725 2950 40  0001 L BNN "Part"
+F 5 "Switch" H 7725 3050 40  0001 L BNN "Family"
+	1    7650 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L D-RESCUE-interphase D9
+U 1 1 5ACC7CE0
+P 7900 2750
+F 0 "D9" H 7900 2850 50  0000 C CNN
+F 1 "D" H 7900 2650 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 7900 2750 50  0001 C CNN
+F 3 "" H 7900 2750 50  0001 C CNN
+	1    7900 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW26
+U 1 1 59BFC35C
+P 9400 3350
+F 0 "SW26" H 9475 3450 60  0000 L BNB
+F 1 "MOM-SPST" H 9475 3250 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 9475 3175 40  0001 L TNN
+F 3 "" H 9300 3450 60  0001 C CNN
+F 4 "-" H 9475 3550 40  0001 L BNN "Part"
+F 5 "Switch" H 9475 3650 40  0001 L BNN "Family"
+	1    9400 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR09
+U 1 1 59BBF383
+P 1500 6050
+F 0 "#PWR09" H 1500 5800 50  0001 C CNN
+F 1 "GND" H 1500 5900 50  0000 C CNN
+F 2 "" H 1500 6050 50  0001 C CNN
+F 3 "" H 1500 6050 50  0001 C CNN
+	1    1500 6050
+	1    0    0    -1  
+$EndComp
+Text Label 6600 650  0    60   ~ 0
+row0
+Text Label 6550 1250 0    60   ~ 0
+row1
+Text Label 6500 1850 0    60   ~ 0
+row2
+Text Label 6450 2450 0    60   ~ 0
+row3
+Text Label 6650 3050 0    60   ~ 0
+row4
+Text Label 7450 3700 0    60   ~ 0
+col0
+Text Label 8050 3800 0    60   ~ 0
+col1
+Text Label 8650 3900 0    60   ~ 0
+col2
+Text Label 9250 4000 0    60   ~ 0
+col3
+Text Label 9850 4100 0    60   ~ 0
+col4
+Text Label 10450 4200 0    60   ~ 0
+col5
+Text Label 11050 4300 0    60   ~ 0
+col6
+Text Label 4400 5150 0    60   ~ 0
+row0
+Text Label 4500 5150 0    60   ~ 0
+row1
+Text Label 4600 5150 0    60   ~ 0
+row2
+Text Label 4700 5150 0    60   ~ 0
+row3
+Text Label 4800 5150 0    60   ~ 0
+row4
+Text Label 5850 3850 0    60   ~ 0
+col4
+Text Label 5850 4250 0    60   ~ 0
+col0
+Text Label 5850 4150 0    60   ~ 0
+col1
+Text Label 5850 4050 0    60   ~ 0
+col2
+Text Label 5850 3950 0    60   ~ 0
+col3
+Text Label 5850 3750 0    60   ~ 0
+col5
+Text Label 5850 3650 0    60   ~ 0
+col6
+Wire Wire Line
+	700  5400 700  5300
+Wire Wire Line
+	700  5300 1900 5300
+Wire Wire Line
+	1450 5400 1450 5300
+Connection ~ 1450 5300
+Wire Wire Line
+	1650 4900 1550 4900
+Wire Wire Line
+	1550 4900 1550 5300
+Connection ~ 1550 5300
+Wire Wire Line
+	1950 4900 2250 4900
+Wire Wire Line
+	2950 5400 2950 5500
+Wire Wire Line
+	2700 5450 2950 5450
+Connection ~ 2950 5450
+Wire Wire Line
+	2700 5300 2750 5300
+Wire Wire Line
+	2750 5300 2750 5050
+Wire Wire Line
+	2750 5050 3350 5050
+Wire Wire Line
+	3350 4900 3350 5300
+Wire Wire Line
+	2950 5100 2950 5050
+Connection ~ 2950 5050
+Wire Wire Line
+	1500 5900 1500 6050
+Wire Wire Line
+	700  5900 3350 5900
+Connection ~ 1500 5900
+Wire Wire Line
+	1450 5700 1450 5900
+Connection ~ 1450 5900
+Wire Wire Line
+	2950 5900 2950 5800
+Connection ~ 2250 5900
+Wire Wire Line
+	3350 5900 3350 5600
+Connection ~ 2950 5900
+Wire Wire Line
+	1650 5450 1900 5450
+Wire Wire Line
+	1650 5450 1650 5300
+Connection ~ 1650 5300
+Wire Wire Line
+	10500 650  10500 950 
+Wire Wire Line
+	6600 650  10500 650 
+Wire Wire Line
+	9900 950  9900 650 
+Connection ~ 9900 650 
+Wire Wire Line
+	9300 950  9300 650 
+Connection ~ 9300 650 
+Wire Wire Line
+	8700 950  8700 650 
+Connection ~ 8700 650 
+Wire Wire Line
+	8100 950  8100 650 
+Connection ~ 8100 650 
+Wire Wire Line
+	7500 950  7500 650 
+Connection ~ 7500 650 
+Wire Wire Line
+	6900 950  6900 650 
+Connection ~ 6900 650 
+Wire Wire Line
+	9900 1550 9900 1250
+Connection ~ 9900 1250
+Wire Wire Line
+	9300 1550 9300 1250
+Connection ~ 9300 1250
+Wire Wire Line
+	8700 1550 8700 1250
+Connection ~ 8700 1250
+Wire Wire Line
+	8100 1550 8100 1250
+Connection ~ 8100 1250
+Wire Wire Line
+	7500 1550 7500 1250
+Connection ~ 7500 1250
+Wire Wire Line
+	6900 1550 6900 1250
+Connection ~ 6900 1250
+Wire Wire Line
+	6500 1850 10500 1850
+Wire Wire Line
+	6450 2450 10500 2450
+Wire Wire Line
+	6900 2150 6900 1850
+Connection ~ 6900 1850
+Wire Wire Line
+	6900 2750 6900 2450
+Connection ~ 6900 2450
+Wire Wire Line
+	7500 3050 7500 3350
+Connection ~ 7500 3050
+Connection ~ 7500 2450
+Wire Wire Line
+	7500 2150 7500 1850
+Connection ~ 7500 1850
+Wire Wire Line
+	8100 2150 8100 1850
+Connection ~ 8100 1850
+Wire Wire Line
+	8100 2750 8100 2450
+Connection ~ 8100 2450
+Wire Wire Line
+	8100 3050 8100 3350
+Connection ~ 8100 3050
+Wire Wire Line
+	8700 3050 8700 3350
+Connection ~ 8700 3050
+Wire Wire Line
+	8700 2750 8700 2450
+Connection ~ 8700 2450
+Wire Wire Line
+	8700 2150 8700 1850
+Connection ~ 8700 1850
+Wire Wire Line
+	9300 3050 9300 3350
+Connection ~ 9300 3050
+Wire Wire Line
+	9300 2750 9300 2450
+Connection ~ 9300 2450
+Wire Wire Line
+	9300 2150 9300 1850
+Connection ~ 9300 1850
+Wire Wire Line
+	9900 2150 9900 1850
+Connection ~ 9900 1850
+Wire Wire Line
+	9900 2750 9900 2450
+Connection ~ 9900 2450
+Wire Wire Line
+	7400 950  7450 950 
+Wire Wire Line
+	7400 1550 7450 1550
+Connection ~ 7450 1550
+Wire Wire Line
+	7400 2150 7450 2150
+Connection ~ 7450 2150
+Wire Wire Line
+	7400 2750 7450 2750
+Connection ~ 7450 2750
+Connection ~ 7450 3350
+Wire Wire Line
+	8000 950  8050 950 
+Wire Wire Line
+	8050 950  8050 3800
+Wire Wire Line
+	8600 950  8650 950 
+Wire Wire Line
+	8650 950  8650 3900
+Wire Wire Line
+	9200 950  9250 950 
+Wire Wire Line
+	9250 950  9250 4000
+Wire Wire Line
+	9800 950  9850 950 
+Wire Wire Line
+	9850 950  9850 4100
+Wire Wire Line
+	10400 950  10450 950 
+Wire Wire Line
+	10450 950  10450 4200
+Wire Wire Line
+	11000 950  11050 950 
+Connection ~ 1900 5900
+Connection ~ 3350 5050
+Wire Wire Line
+	8000 1550 8050 1550
+Connection ~ 8050 1550
+Wire Wire Line
+	8000 2150 8050 2150
+Connection ~ 8050 2150
+Wire Wire Line
+	8000 3350 8050 3350
+Connection ~ 8050 3350
+Wire Wire Line
+	8600 3350 8650 3350
+Connection ~ 8650 3350
+Wire Wire Line
+	8600 2750 8650 2750
+Connection ~ 8650 2750
+Wire Wire Line
+	8600 2150 8650 2150
+Connection ~ 8650 2150
+Wire Wire Line
+	8600 1550 8650 1550
+Connection ~ 8650 1550
+Wire Wire Line
+	9200 2150 9250 2150
+Connection ~ 9250 2150
+Wire Wire Line
+	9200 2750 9250 2750
+Connection ~ 9250 2750
+Wire Wire Line
+	9200 3350 9250 3350
+Connection ~ 9250 3350
+Wire Wire Line
+	9800 3350 9850 3350
+Connection ~ 9850 3350
+Wire Wire Line
+	9800 2750 9850 2750
+Connection ~ 9850 2750
+Wire Wire Line
+	9800 2150 9850 2150
+Connection ~ 9850 2150
+Wire Wire Line
+	9800 1550 9850 1550
+Connection ~ 9850 1550
+Wire Wire Line
+	10400 1550 10450 1550
+Connection ~ 10450 1550
+Wire Wire Line
+	10400 2150 10450 2150
+Connection ~ 10450 2150
+Wire Wire Line
+	10400 2750 10450 2750
+Connection ~ 10450 2750
+Connection ~ 10450 3350
+Wire Wire Line
+	9200 1550 9250 1550
+Connection ~ 9250 1550
+Connection ~ 700  5900
+Connection ~ 1050 5300
+Wire Wire Line
+	5200 6150 5050 6150
+Connection ~ 5200 6150
+Wire Wire Line
+	1050 4950 1050 5300
+Wire Wire Line
+	5200 5650 5200 6150
+Wire Wire Line
+	4050 3200 4700 3200
+Wire Wire Line
+	4700 3200 4700 3250
+Wire Wire Line
+	4000 3150 4800 3150
+Wire Wire Line
+	4800 3150 4800 3250
+Wire Wire Line
+	3550 1600 3750 1600
+Wire Wire Line
+	3750 1600 3750 1250
+Wire Wire Line
+	3550 1700 4050 1700
+Wire Wire Line
+	3550 1800 4000 1800
+Wire Wire Line
+	4800 800  4800 900 
+Wire Wire Line
+	5400 5150 5850 5150
+Wire Wire Line
+	5850 5150 5850 5050
+Connection ~ 3750 2250
+Wire Wire Line
+	4300 5150 4300 5750
+Wire Wire Line
+	5300 5150 5300 5550
+Wire Wire Line
+	5300 5550 4300 5550
+Wire Wire Line
+	5200 5650 6000 5650
+Wire Wire Line
+	6000 5650 6000 4550
+Wire Wire Line
+	6000 4550 5850 4550
+Wire Wire Line
+	3550 1900 3750 1900
+Wire Wire Line
+	3750 1900 3750 2300
+Connection ~ 4300 5550
+Connection ~ 4000 1800
+Connection ~ 4050 1700
+Wire Wire Line
+	11050 950  11050 4300
+Wire Wire Line
+	6550 1250 10500 1250
+Wire Wire Line
+	7500 2450 7500 2750
+Wire Wire Line
+	7500 2750 7550 2750
+Connection ~ 8050 2750
+Wire Wire Line
+	7450 950  7450 3700
+Connection ~ 1150 5300
+Wire Wire Line
+	700  5700 700  5900
+Wire Wire Line
+	4000 1800 4000 3150
+Wire Wire Line
+	4050 1700 4050 3200
+$Comp
+L D-RESCUE-interphase D30
+U 1 1 5ACDE977
+P 10300 3350
+F 0 "D30" H 10300 3450 50  0000 C CNN
+F 1 "D" H 10300 3250 50  0000 C CNN
+F 2 "Diodes_SMD:D_MiniMELF" H 10300 3350 50  0001 C CNN
+F 3 "" H 10300 3350 50  0001 C CNN
+	1    10300 3350
+	-1   0    0    -1  
+$EndComp
+$Comp
+L MOM-SPST SW31
+U 1 1 5ACDEA5E
+P 10050 3350
+F 0 "SW31" H 10125 3450 60  0000 L BNB
+F 1 "MOM-SPST" H 10125 3250 40  0000 L TNN
+F 2 "Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB" H 10125 3175 40  0001 L TNN
+F 3 "" H 9950 3450 60  0001 C CNN
+F 4 "-" H 10125 3550 40  0001 L BNN "Part"
+F 5 "Switch" H 10125 3650 40  0001 L BNN "Family"
+	1    10050 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9950 3350 9950 3050
+Wire Wire Line
+	9950 3050 6650 3050
+$EndSCHEMATC
