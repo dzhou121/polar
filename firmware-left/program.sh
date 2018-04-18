@@ -14,8 +14,8 @@ echo '============================= PROGRAMMING ============================='
 {
 	echo "reset halt";
 	sleep 0.1;
-	echo "flash write_image erase" $HEX;
-	sleep 11;
+	echo "flash write_image erase /Users/Lulu/nRF5_SDK_12/examples/polar/firmware-left/custom/s130/armgcc/_build/nrf51422_xxac.hex";
+	sleep 15;
 	echo "reset";
 	sleep 0.1;
 	exit;

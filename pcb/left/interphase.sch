@@ -34,7 +34,6 @@ LIBS:valves
 LIBS:core51822b
 LIBS:switches
 LIBS:mcp1640
-LIBS:interphase-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -810,13 +809,13 @@ $EndComp
 $Comp
 L GND #PWR03
 U 1 1 59C23F89
-P 3750 2300
-F 0 "#PWR03" H 3750 2050 50  0001 C CNN
-F 1 "GND" H 3750 2150 50  0000 C CNN
-F 2 "" H 3750 2300 50  0001 C CNN
-F 3 "" H 3750 2300 50  0001 C CNN
-	1    3750 2300
-	1    0    0    -1  
+P 3550 1700
+F 0 "#PWR03" H 3550 1450 50  0001 C CNN
+F 1 "GND" H 3550 1550 50  0000 C CNN
+F 2 "" H 3550 1700 50  0001 C CNN
+F 3 "" H 3550 1700 50  0001 C CNN
+	1    3550 1700
+	0    -1   -1   0   
 $EndComp
 $Comp
 L Conn_01x04_Male J1
@@ -1231,28 +1230,19 @@ Wire Wire Line
 Wire Wire Line
 	5200 5650 5200 6150
 Wire Wire Line
-	4050 3200 4700 3200
+	4700 1900 4700 3250
 Wire Wire Line
-	4700 3200 4700 3250
-Wire Wire Line
-	4000 3150 4800 3150
-Wire Wire Line
-	4800 3150 4800 3250
+	4800 1800 4800 3250
 Wire Wire Line
 	3550 1600 3750 1600
 Wire Wire Line
 	3750 1600 3750 1250
-Wire Wire Line
-	3550 1700 4050 1700
-Wire Wire Line
-	3550 1800 4000 1800
 Wire Wire Line
 	4800 800  4800 900 
 Wire Wire Line
 	5400 5150 5850 5150
 Wire Wire Line
 	5850 5150 5850 5050
-Connection ~ 3750 2250
 Wire Wire Line
 	4300 5150 4300 5750
 Wire Wire Line
@@ -1265,13 +1255,7 @@ Wire Wire Line
 	6000 5650 6000 4550
 Wire Wire Line
 	6000 4550 5850 4550
-Wire Wire Line
-	3550 1900 3750 1900
-Wire Wire Line
-	3750 1900 3750 2300
 Connection ~ 4300 5550
-Connection ~ 4000 1800
-Connection ~ 4050 1700
 Wire Wire Line
 	11050 950  11050 4300
 Wire Wire Line
@@ -1286,10 +1270,6 @@ Wire Wire Line
 Connection ~ 1150 5300
 Wire Wire Line
 	700  5700 700  5900
-Wire Wire Line
-	4000 1800 4000 3150
-Wire Wire Line
-	4050 1700 4050 3200
 $Comp
 L D-RESCUE-interphase D30
 U 1 1 5ACDE977
@@ -1318,4 +1298,8 @@ Wire Wire Line
 	9950 3350 9950 3050
 Wire Wire Line
 	9950 3050 6650 3050
+Wire Wire Line
+	3550 1800 4800 1800
+Wire Wire Line
+	3550 1900 4700 1900
 $EndSCHEMATC
