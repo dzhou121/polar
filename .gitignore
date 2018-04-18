@@ -10,3 +10,4 @@ ftp-lib-table
 # for external tools
 *.dsn
 .DS_Store
+_build/
