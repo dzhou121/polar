@@ -60,6 +60,8 @@
 #include "nrf.h"
 #include "nrf_assert.h"
 #include "app_error.h"
+#include "app_uart.h"
+#include "ble_db_discovery.h"
 #include "nrf_gpio.h"
 #include "ble.h"
 #include "ble_hci.h"
@@ -81,6 +83,7 @@
 #include "fds.h"
 #include "fstorage.h"
 #include "ble_conn_state.h"
+#include "ble_nus_c.h"
 
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
@@ -105,6 +108,8 @@
 
 #define DEVICE_NAME                      "Polar_Keyboard_Left"                          /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
+
+#define NUS_SERVICE_UUID_TYPE   BLE_UUID_TYPE_VENDOR_BEGIN      /**< UUID type for the Nordic UART Service (vendor specific). */
 
 #define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE          4                                          /**< Size of timer operation queues. */
@@ -143,6 +148,11 @@
 #define SEC_PARAM_OOB                    0                                           /**< Out Of Band data not available. */
 #define SEC_PARAM_MIN_KEY_SIZE           7                                           /**< Minimum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE           16                                          /**< Maximum encryption key size. */
+
+#define SCAN_INTERVAL               0x00A0                                        /**< Determines scan interval in units of 0.625 millisecond. */
+#define SCAN_WINDOW                 0x0050                                        /**< Determines scan window in units of 0.625 millisecond. */
+#define SCAN_TIMEOUT                0
+
 
 #define OUTPUT_REPORT_INDEX              0                                           /**< Index of Output Report. */
 #define OUTPUT_REPORT_MAX_LEN            1                                           /**< Maximum length of Output Report. */
@@ -260,31 +270,79 @@
 				1<<L_S22 | \
 				1<<L_S23)
 
-#define S01 L_S01
-#define S02 L_S02
-#define S03 L_S03
-#define S04 L_S04
-#define S05 L_S05
-#define S06 L_S06
-#define S07 L_S07
-#define S08 L_S08
-#define S09 L_S09
-#define S10 L_S10
-#define S11 L_S11
-#define S12 L_S12
-#define S13 L_S13
-#define S14 L_S14
-#define S15 L_S15
-#define S16 L_S16
-#define S17 L_S17
-#define S18 L_S18
-#define S19 L_S19
-#define S20 L_S20
-#define S21 L_S21
-#define S22 L_S22
-#define S23 L_S23
+#define R_S01 2
+#define R_S02 5
+#define R_S03 10
+#define R_S04 15
+#define R_S05 14
+#define R_S06 1
+#define R_S07 4
+#define R_S08 7
+#define R_S09 8
+#define R_S10 13
+#define R_S11 0
+#define R_S12 3
+#define R_S13 6
+#define R_S14 9
+#define R_S15 19
+#define R_S16 25
+#define R_S17 29
+#define R_S18 28
+#define R_S19 30
+#define R_S20 24
+#define R_S21 23
+#define R_S22 22
+#define R_S23 21
 
-#define INPUT_MASK L_MASK
+#define R_MASK (1<<R_S01 | \
+ 				1<<R_S02 | \
+				1<<R_S03 | \
+				1<<R_S04 | \
+				1<<R_S05 | \
+				1<<R_S06 | \
+				1<<R_S07 | \
+				1<<R_S08 | \
+				1<<R_S09 | \
+				1<<R_S10 | \
+				1<<R_S11 | \
+				1<<R_S12 | \
+				1<<R_S13 | \
+				1<<R_S14 | \
+				1<<R_S15 | \
+				1<<R_S16 | \
+				1<<R_S17 | \
+				1<<R_S18 | \
+				1<<R_S19 | \
+				1<<R_S20 | \
+				1<<R_S21 | \
+				1<<R_S22 | \
+				1<<R_S23)
+
+#define S01 R_S01
+#define S02 R_S02
+#define S03 R_S03
+#define S04 R_S04
+#define S05 R_S05
+#define S06 R_S06
+#define S07 R_S07
+#define S08 R_S08
+#define S09 R_S09
+#define S10 R_S10
+#define S11 R_S11
+#define S12 R_S12
+#define S13 R_S13
+#define S14 R_S14
+#define S15 R_S15
+#define S16 R_S16
+#define S17 R_S17
+#define S18 R_S18
+#define S19 R_S19
+#define S20 R_S20
+#define S21 R_S21
+#define S22 R_S22
+#define S23 R_S23
+
+#define INPUT_MASK R_MASK
 
 /** @} */
 
@@ -505,18 +563,20 @@ enum layers
 };
 
 const int l_pins[23] = {
-    14, 1,  30, 24, 28,
-    8,  5,  2,   4, 29,
-    9,  6,  3,   0, 21,
-    16, 13, 12, 10,
-    15, 17, 18, 19,
+          14,     15,     10,      5,      2,
+          13,      8,      7,      4,      1,
+          19,      9,      6,      3,      0,
+                  30,     29,     28,     25,
+                  21,     22,     23,     24,
 };
 
 const uint16_t l_keymaps[][23] = {
     [_STD] = {
-        KC_Q, KC_W, KC_E, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
-        KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
-        KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
+        KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,
+        KC_A,   KC_S,   KC_D,   KC_F,   KC_G,
+        KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,
+                KC_W,   KC_E,   KC_Q, KC_LSHIFT,
+                KC_W,   KC_E,   KC_Q,   KC_Q,
     },
     [_FN] = {
         KC_Q, KC_W, KC_E,
@@ -526,6 +586,55 @@ const uint16_t l_keymaps[][23] = {
 static uint32_t l_keys = 0;
 
 static uint32_t l_keys_snapshot = 0;
+
+#define MIN_CONNECTION_INTERVAL MSEC_TO_UNITS(20, UNIT_1_25_MS) /**< Determines minimum connection interval in millisecond. */
+#define MAX_CONNECTION_INTERVAL MSEC_TO_UNITS(75, UNIT_1_25_MS) /**< Determines maximum connection interval in millisecond. */
+#define SUPERVISION_TIMEOUT     MSEC_TO_UNITS(4000, UNIT_10_MS) /**< Determines supervision time-out in units of 10 millisecond. */
+
+#define UUID16_SIZE             2                               /**< Size of 16 bit UUID */
+#define UUID32_SIZE             4                               /**< Size of 32 bit UUID */
+#define UUID128_SIZE            16                              /**< Size of 128 bit UUID */
+
+static ble_nus_c_t              m_ble_nus_c;                    /**< Instance of NUS service. Must be passed to all NUS_C API calls. */
+static ble_db_discovery_t       m_ble_db_discovery;             /**< Instance of database discovery module. Must be passed to all db_discovert API calls */
+
+/**
+ * @brief Connection parameters requested for connection.
+ */
+static const ble_gap_conn_params_t m_connection_param =
+  {
+    (uint16_t)MIN_CONNECTION_INTERVAL,  // Minimum connection
+    (uint16_t)MAX_CONNECTION_INTERVAL,  // Maximum connection
+    (uint16_t)SLAVE_LATENCY,            // Slave latency
+    (uint16_t)SUPERVISION_TIMEOUT       // Supervision time-out
+  };
+
+/**
+ * @brief Parameters used when scanning.
+ */
+static const ble_gap_scan_params_t m_scan_params =
+{
+    .active   = 1,
+    .interval = SCAN_INTERVAL,
+    .window   = SCAN_WINDOW,
+    .timeout  = SCAN_TIMEOUT,
+    #if (NRF_SD_BLE_API_VERSION == 2)
+        .selective   = 0,
+        .p_whitelist = NULL,
+    #endif
+    #if (NRF_SD_BLE_API_VERSION == 3)
+        .use_whitelist = 0,
+    #endif
+};
+
+/**
+ * @brief NUS uuid
+ */
+static const ble_uuid_t m_nus_uuid =
+  {
+    .uuid = BLE_UUID_NUS_SERVICE,
+    .type = NUS_SERVICE_UUID_TYPE
+  };
 
 static ble_hids_t m_hids;                                   /**< Structure used to identify the HID service. */
 static ble_bas_t  m_bas;                                    /**< Structure used to identify the battery service. */
@@ -628,6 +737,23 @@ static void peer_list_get(pm_peer_id_t * p_peers, uint32_t * p_size)
 }
 
 
+/**@brief Function for initiating scanning.
+ */
+static void scan_start(void)
+{
+    ret_code_t err_code;
+
+    (void) sd_ble_gap_scan_stop();
+
+    err_code = sd_ble_gap_scan_start(&m_scan_params);
+    // It is okay to ignore this error since we are stopping the scan anyway.
+    if (err_code != NRF_ERROR_INVALID_STATE)
+    {
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+
 /**@brief Function for starting advertising.
  */
 static void advertising_start(void)
@@ -654,6 +780,15 @@ static void advertising_start(void)
 
     ret = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(ret);
+}
+
+
+/**@brief Function for initiating advertising and scanning.
+ */
+static void adv_scan_start(void)
+{
+    scan_start();
+    advertising_start();
 }
 
 
@@ -1702,6 +1837,195 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     }
 }
 
+/**@brief Reads an advertising report and checks if a uuid is present in the service list.
+ *
+ * @details The function is able to search for 16-bit, 32-bit and 128-bit service uuids.
+ *          To see the format of a advertisement packet, see
+ *          https://www.bluetooth.org/Technical/AssignedNumbers/generic_access_profile.htm
+ *
+ * @param[in]   p_target_uuid The uuid to search fir
+ * @param[in]   p_adv_report  Pointer to the advertisement report.
+ *
+ * @retval      true if the UUID is present in the advertisement report. Otherwise false
+ */
+static bool is_uuid_present(const ble_uuid_t *p_target_uuid,
+                            const ble_gap_evt_adv_report_t *p_adv_report)
+{
+    uint32_t err_code;
+    uint32_t index = 0;
+    uint8_t *p_data = (uint8_t *)p_adv_report->data;
+    ble_uuid_t extracted_uuid;
+
+    while (index < p_adv_report->dlen)
+    {
+        uint8_t field_length = p_data[index];
+        uint8_t field_type   = p_data[index + 1];
+
+        if ( (field_type == BLE_GAP_AD_TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE)
+           || (field_type == BLE_GAP_AD_TYPE_16BIT_SERVICE_UUID_COMPLETE)
+           )
+        {
+            for (uint32_t u_index = 0; u_index < (field_length / UUID16_SIZE); u_index++)
+            {
+                err_code = sd_ble_uuid_decode(  UUID16_SIZE,
+                                                &p_data[u_index * UUID16_SIZE + index + 2],
+                                                &extracted_uuid);
+                if (err_code == NRF_SUCCESS)
+                {
+                    if ((extracted_uuid.uuid == p_target_uuid->uuid)
+                        && (extracted_uuid.type == p_target_uuid->type))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        else if ( (field_type == BLE_GAP_AD_TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE)
+                || (field_type == BLE_GAP_AD_TYPE_32BIT_SERVICE_UUID_COMPLETE)
+                )
+        {
+            for (uint32_t u_index = 0; u_index < (field_length / UUID32_SIZE); u_index++)
+            {
+                err_code = sd_ble_uuid_decode(UUID16_SIZE,
+                &p_data[u_index * UUID32_SIZE + index + 2],
+                &extracted_uuid);
+                if (err_code == NRF_SUCCESS)
+                {
+                    if ((extracted_uuid.uuid == p_target_uuid->uuid)
+                        && (extracted_uuid.type == p_target_uuid->type))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        else if ( (field_type == BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE)
+                || (field_type == BLE_GAP_AD_TYPE_128BIT_SERVICE_UUID_COMPLETE)
+                )
+        {
+            err_code = sd_ble_uuid_decode(UUID128_SIZE,
+                                          &p_data[index + 2],
+                                          &extracted_uuid);
+            if (err_code == NRF_SUCCESS)
+            {
+                if ((extracted_uuid.uuid == p_target_uuid->uuid)
+                    && (extracted_uuid.type == p_target_uuid->type))
+                {
+                    return true;
+                }
+            }
+        }
+        index += field_length + 1;
+    }
+    return false;
+}
+
+/**@brief Function for handling the Application's BLE Stack events.
+ *
+ * @param[in] p_ble_evt  Bluetooth stack event.
+ */
+static void on_ble_central_evt(ble_evt_t * p_ble_evt)
+{
+    uint32_t              err_code;
+    const ble_gap_evt_t * p_gap_evt = &p_ble_evt->evt.gap_evt;
+
+    switch (p_ble_evt->header.evt_id)
+    {
+        case BLE_GAP_EVT_ADV_REPORT:
+        {
+            const ble_gap_evt_adv_report_t * p_adv_report = &p_gap_evt->params.adv_report;
+
+            if (is_uuid_present(&m_nus_uuid, p_adv_report))
+            {
+
+                err_code = sd_ble_gap_connect(&p_adv_report->peer_addr,
+                                              &m_scan_params,
+                                              &m_connection_param);
+
+                if (err_code == NRF_SUCCESS)
+                {
+                    // scan is automatically stopped by the connect
+                    err_code = bsp_indication_set(BSP_INDICATE_IDLE);
+                    APP_ERROR_CHECK(err_code);
+                    printf("Connecting to target %02x%02x%02x%02x%02x%02x\r\n",
+                             p_adv_report->peer_addr.addr[0],
+                             p_adv_report->peer_addr.addr[1],
+                             p_adv_report->peer_addr.addr[2],
+                             p_adv_report->peer_addr.addr[3],
+                             p_adv_report->peer_addr.addr[4],
+                             p_adv_report->peer_addr.addr[5]
+                             );
+                }
+            }
+        }break; // BLE_GAP_EVT_ADV_REPORT
+
+        case BLE_GAP_EVT_CONNECTED:
+            //NRF_LOG_DEBUG("Connected to target\r\n");
+            err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
+            APP_ERROR_CHECK(err_code);
+
+            // start discovery of services. The NUS Client waits for a discovery result
+            err_code = ble_db_discovery_start(&m_ble_db_discovery, p_ble_evt->evt.gap_evt.conn_handle);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GAP_EVT_CONNECTED
+
+        case BLE_GAP_EVT_TIMEOUT:
+            if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_SCAN)
+            {
+                //NRF_LOG_DEBUG("Scan timed out.\r\n");
+                scan_start();
+            }
+            else if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_CONN)
+            {
+                printf("Connection Request timed out.\r\n");
+            }
+            break; // BLE_GAP_EVT_TIMEOUT
+
+        case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
+            // Pairing not supported
+            err_code = sd_ble_gap_sec_params_reply(p_ble_evt->evt.gap_evt.conn_handle, BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GAP_EVT_SEC_PARAMS_REQUEST
+
+        case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
+            // Accepting parameters requested by peer.
+            err_code = sd_ble_gap_conn_param_update(p_gap_evt->conn_handle,
+                                                    &p_gap_evt->params.conn_param_update_request.conn_params);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST
+
+        case BLE_GATTC_EVT_TIMEOUT:
+            // Disconnect on GATT Client timeout event.
+            //NRF_LOG_DEBUG("GATT Client Timeout.\r\n");
+            err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gattc_evt.conn_handle,
+                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GATTC_EVT_TIMEOUT
+
+        case BLE_GATTS_EVT_TIMEOUT:
+            // Disconnect on GATT Server timeout event.
+            //NRF_LOG_DEBUG("GATT Server Timeout.\r\n");
+            err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
+                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GATTS_EVT_TIMEOUT
+
+#if (NRF_SD_BLE_API_VERSION == 3)
+        case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
+            err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
+                                                       NRF_BLE_MAX_MTU_SIZE);
+            APP_ERROR_CHECK(err_code);
+            break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
+#endif
+
+        default:
+            break;
+    }
+}
+
+
 
 /**@brief Function for handling the Application's BLE Stack events.
  *
@@ -1830,16 +2154,49 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
  */
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
+    uint16_t conn_handle;
+    uint16_t role;
+
     /** The Connection state module has to be fed BLE events in order to function correctly
      * Remember to call ble_conn_state_on_ble_evt before calling any ble_conns_state_* functions. */
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
-    bsp_btn_ble_on_ble_evt(p_ble_evt);
-    on_ble_evt(p_ble_evt);
-    ble_advertising_on_ble_evt(p_ble_evt);
-    ble_conn_params_on_ble_evt(p_ble_evt);
-    ble_hids_on_ble_evt(&m_hids, p_ble_evt);
-    ble_bas_on_ble_evt(&m_bas, p_ble_evt);
+
+    // The connection handle should really be retrievable for any event type.
+    conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+    role        = ble_conn_state_role(conn_handle);
+
+    // Based on the role this device plays in the connection, dispatch to the right applications.
+    if (role == BLE_GAP_ROLE_PERIPH)
+    {
+        bsp_btn_ble_on_ble_evt(p_ble_evt);
+        on_ble_evt(p_ble_evt);
+        ble_advertising_on_ble_evt(p_ble_evt);
+        ble_conn_params_on_ble_evt(p_ble_evt);
+        ble_hids_on_ble_evt(&m_hids, p_ble_evt);
+        ble_bas_on_ble_evt(&m_bas, p_ble_evt);
+    }
+    else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
+    {
+        /** on_ble_central_evt will update the connection handles, so we want to execute it
+         * after dispatching to the central applications upon disconnection. */
+        if (p_ble_evt->header.evt_id != BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+
+        if (conn_handle < CENTRAL_LINK_COUNT + PERIPHERAL_LINK_COUNT)
+        {
+            ble_db_discovery_on_ble_evt(&m_ble_db_discovery, p_ble_evt);
+        }
+        ble_nus_c_on_ble_evt(&m_ble_nus_c,p_ble_evt);
+
+        // If the peer disconnected, we update the connection handles last.
+        if (p_ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+    }
 }
 
 
@@ -2071,6 +2428,82 @@ static void buttons_leds_init(bool * p_erase_bonds)
 }
 
 
+/**@brief Callback handling NUS Client events.
+ *
+ * @details This function is called to notify the application of NUS client events.
+ *
+ * @param[in]   p_ble_nus_c   NUS Client Handle. This identifies the NUS client
+ * @param[in]   p_ble_nus_evt Pointer to the NUS Client event.
+ */
+
+/**@snippet [Handling events from the ble_nus_c module] */
+static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt_t * p_ble_nus_evt)
+{
+    uint32_t err_code;
+    switch (p_ble_nus_evt->evt_type)
+    {
+        case BLE_NUS_C_EVT_DISCOVERY_COMPLETE:
+            err_code = ble_nus_c_handles_assign(p_ble_nus_c, p_ble_nus_evt->conn_handle, &p_ble_nus_evt->handles);
+            APP_ERROR_CHECK(err_code);
+
+            err_code = ble_nus_c_rx_notif_enable(p_ble_nus_c);
+            APP_ERROR_CHECK(err_code);
+            printf("The device has the Nordic UART Service\r\n");
+            break;
+
+        case BLE_NUS_C_EVT_NUS_RX_EVT:
+            for (uint32_t i = 0; i < p_ble_nus_evt->data_len; i++)
+            {
+                while (app_uart_put( p_ble_nus_evt->p_data[i]) != NRF_SUCCESS);
+            }
+            break;
+
+        case BLE_NUS_C_EVT_DISCONNECTED:
+            printf("Disconnected\r\n");
+            scan_start();
+            break;
+    }
+}
+
+/**@brief Function for initializing the NUS Client.
+ */
+static void nus_c_init(void)
+{
+    uint32_t         err_code;
+    ble_nus_c_init_t nus_c_init_t;
+
+    nus_c_init_t.evt_handler = ble_nus_c_evt_handler;
+
+    err_code = ble_nus_c_init(&m_ble_nus_c, &nus_c_init_t);
+    APP_ERROR_CHECK(err_code);
+}
+
+
+
+/**@brief Function for handling database discovery events.
+ *
+ * @details This function is callback function to handle events from the database discovery module.
+ *          Depending on the UUIDs that are discovered, this function should forward the events
+ *          to their respective services.
+ *
+ * @param[in] p_event  Pointer to the database discovery event.
+ */
+static void db_disc_handler(ble_db_discovery_evt_t * p_evt)
+{
+    ble_nus_c_on_db_disc_evt(&m_ble_nus_c, p_evt);
+}
+
+
+/** @brief Function for initializing the Database Discovery Module.
+ */
+static void db_discovery_init(void)
+{
+    uint32_t err_code = ble_db_discovery_init(db_disc_handler);
+    APP_ERROR_CHECK(err_code);
+}
+
+
+
 /**@brief Function for the Power manager.
  */
 static void power_manage(void)
@@ -2096,7 +2529,9 @@ int main(void)
 
     timers_init();
     buttons_leds_init(&erase_bonds);
+    db_discovery_init();
     ble_stack_init();
+    nus_c_init();
     scheduler_init();
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)
@@ -2113,7 +2548,8 @@ int main(void)
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
     timers_start();
-    advertising_start();
+
+    adv_scan_start();
 
     // Enter main loop.
     for (;;)

@@ -19,7 +19,7 @@ echo '============================= PROGRAMMING ============================='
 	echo "flash write_image erase /Users/Lulu/nRF5_SDK_12/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex";
 	sleep 27;
 	echo "flash write_image /Users/Lulu/nRF5_SDK_12/examples/polar/firmware-left/custom/s130/armgcc/_build/nrf51422_xxac.hex";
-	sleep 16;
+	sleep 19;
 	echo "reset";
 	sleep 0.1;
 	exit;
