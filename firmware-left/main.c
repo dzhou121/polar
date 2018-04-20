@@ -103,12 +103,13 @@
 #define KEY_PRESS_BUTTON_ID              0                                          /**< Button used as Keyboard key press. */
 #define SHIFT_BUTTON_ID                  1                                          /**< Button used as 'SHIFT' Key. */
 
-#define DEVICE_NAME                      "Polar_Keyboard"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                      "Polar_Keyboard_Left"                          /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE          4                                          /**< Size of timer operation queues. */
 
+#define KEY_SCAN_INTERVAL                APP_TIMER_TICKS(1, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 #define BATTERY_LEVEL_MEAS_INTERVAL      APP_TIMER_TICKS(2000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 #define MIN_BATTERY_LEVEL                81                                         /**< Minimum simulated battery level. */
 #define MAX_BATTERY_LEVEL                100                                        /**< Maximum simulated battery level. */
@@ -170,7 +171,15 @@
 
 #define MODIFIER_KEY_POS                 0                                           /**< Position of the modifier byte in the Input Report. */
 #define SCAN_CODE_POS                    2                                           /**< This macro indicates the start position of the key scan code in a HID Report. As per the document titled 'Device Class Definition for Human Interface Devices (HID) V1.11, each report shall have one modifier byte followed by a reserved constant byte and then the key scan code. */
-#define SHIFT_KEY_CODE                   0x02                                        /**< Key code indicating the press of the Shift Key. */
+
+#define L_CONTROL_KEY_CODE                 0x01
+#define L_SHIFT_KEY_CODE                   0x02                                        
+#define L_ALT_KEY_CODE                     1<<2                                        
+#define L_GUI_KEY_CODE                     1<<3
+#define R_CONTROL_KEY_CODE                 1<<4
+#define R_SHIFT_KEY_CODE                   1<<5                                        
+#define R_ALT_KEY_CODE                     1<<6                                        
+#define R_GUI_KEY_CODE                     1<<7
 
 #define MAX_KEYS_IN_ONE_REPORT           (INPUT_REPORT_KEYS_MAX_LEN - SCAN_CODE_POS) /**< Maximum number of key presses that can be sent in one Input Report. */
 
@@ -200,6 +209,82 @@
     {                                          \
         buffer_list.buffer[(i)].p_data = NULL; \
     } while (0)
+
+#define L_LED 23
+
+#define L_S01 12
+#define L_S02 4
+#define L_S03 30
+#define L_S04 24
+#define L_S05 28
+#define L_S06 8
+#define L_S07 5
+#define L_S08 2
+#define L_S09 1
+#define L_S10 29
+#define L_S11 9
+#define L_S12 6
+#define L_S13 3
+#define L_S14 0
+#define L_S15 21
+#define L_S16 16
+#define L_S17 13
+#define L_S18 14
+#define L_S19 10
+#define L_S20 15
+#define L_S21 17
+#define L_S22 18
+#define L_S23 19
+
+#define L_MASK (1<<L_S01 | \
+ 				1<<L_S02 | \
+				1<<L_S03 | \
+				1<<L_S04 | \
+				1<<L_S05 | \
+				1<<L_S06 | \
+				1<<L_S07 | \
+				1<<L_S08 | \
+				1<<L_S09 | \
+				1<<L_S10 | \
+				1<<L_S11 | \
+				1<<L_S12 | \
+				1<<L_S13 | \
+				1<<L_S14 | \
+				1<<L_S15 | \
+				1<<L_S16 | \
+				1<<L_S17 | \
+				1<<L_S18 | \
+				1<<L_S19 | \
+				1<<L_S20 | \
+				1<<L_S21 | \
+				1<<L_S22 | \
+				1<<L_S23)
+
+#define S01 L_S01
+#define S02 L_S02
+#define S03 L_S03
+#define S04 L_S04
+#define S05 L_S05
+#define S06 L_S06
+#define S07 L_S07
+#define S08 L_S08
+#define S09 L_S09
+#define S10 L_S10
+#define S11 L_S11
+#define S12 L_S12
+#define S13 L_S13
+#define S14 L_S14
+#define S15 L_S15
+#define S16 L_S16
+#define S17 L_S17
+#define S18 L_S18
+#define S19 L_S19
+#define S20 L_S20
+#define S21 L_S21
+#define S22 L_S22
+#define S23 L_S23
+
+#define INPUT_MASK L_MASK
 
 /** @} */
 
@@ -235,6 +320,213 @@ typedef struct
 
 STATIC_ASSERT(sizeof(buffer_list_t) % 4 == 0);
 
+enum hid_keyboard_keypad_usage {
+    KC_NO               = 0x00,
+    KC_ROLL_OVER,
+    KC_POST_FAIL,
+    KC_UNDEFINED,
+    KC_A,
+    KC_B,
+    KC_C,
+    KC_D,
+    KC_E,
+    KC_F,
+    KC_G,
+    KC_H,
+    KC_I,
+    KC_J,
+    KC_K,
+    KC_L,
+    KC_M,               /* 0x10 */
+    KC_N,
+    KC_O,
+    KC_P,
+    KC_Q,
+    KC_R,
+    KC_S,
+    KC_T,
+    KC_U,
+    KC_V,
+    KC_W,
+    KC_X,
+    KC_Y,
+    KC_Z,
+    KC_1,
+    KC_2,
+    KC_3,               /* 0x20 */
+    KC_4,
+    KC_5,
+    KC_6,
+    KC_7,
+    KC_8,
+    KC_9,
+    KC_0,
+    KC_ENTER,
+    KC_ESCAPE,
+    KC_BSPACE,
+    KC_TAB,
+    KC_SPACE,
+    KC_MINUS,
+    KC_EQUAL,
+    KC_LBRACKET,
+    KC_RBRACKET,        /* 0x30 */
+    KC_BSLASH,          /* \ (and |) */
+    KC_NONUS_HASH,      /* Non-US # and ~ (Typically near the Enter key) */
+    KC_SCOLON,          /* ; (and :) */
+    KC_QUOTE,           /* ' and " */
+    KC_GRAVE,           /* Grave accent and tilde */
+    KC_COMMA,           /* , and < */
+    KC_DOT,             /* . and > */
+    KC_SLASH,           /* / and ? */
+    KC_CAPSLOCK,
+    KC_F1,
+    KC_F2,
+    KC_F3,
+    KC_F4,
+    KC_F5,
+    KC_F6,
+    KC_F7,              /* 0x40 */
+    KC_F8,
+    KC_F9,
+    KC_F10,
+    KC_F11,
+    KC_F12,
+    KC_PSCREEN,
+    KC_SCROLLLOCK,
+    KC_PAUSE,
+    KC_INSERT,
+    KC_HOME,
+    KC_PGUP,
+    KC_DELETE,
+    KC_END,
+    KC_PGDOWN,
+    KC_RIGHT,
+    KC_LEFT,            /* 0x50 */
+    KC_DOWN,
+    KC_UP,
+    KC_NUMLOCK,
+    KC_KP_SLASH,
+    KC_KP_ASTERISK,
+    KC_KP_MINUS,
+    KC_KP_PLUS,
+    KC_KP_ENTER,
+    KC_KP_1,
+    KC_KP_2,
+    KC_KP_3,
+    KC_KP_4,
+    KC_KP_5,
+    KC_KP_6,
+    KC_KP_7,
+    KC_KP_8,            /* 0x60 */
+    KC_KP_9,
+    KC_KP_0,
+    KC_KP_DOT,
+    KC_NONUS_BSLASH,    /* Non-US \ and | (Typically near the Left-Shift key) */
+    KC_APPLICATION,
+    KC_POWER,
+    KC_KP_EQUAL,
+    KC_F13,
+    KC_F14,
+    KC_F15,
+    KC_F16,
+    KC_F17,
+    KC_F18,
+    KC_F19,
+    KC_F20,
+    KC_F21,             /* 0x70 */
+    KC_F22,
+    KC_F23,
+    KC_F24,
+    KC_EXECUTE,
+    KC_HELP,
+    KC_MENU,
+    KC_SELECT,
+    KC_STOP,
+    KC_AGAIN,
+    KC_UNDO,
+    KC_CUT,
+    KC_COPY,
+    KC_PASTE,
+    KC_FIND,
+    KC__MUTE,
+    KC__VOLUP,          /* 0x80 */
+    KC__VOLDOWN,
+    KC_LOCKING_CAPS,    /* locking Caps Lock */
+    KC_LOCKING_NUM,     /* locking Num Lock */
+    KC_LOCKING_SCROLL,  /* locking Scroll Lock */
+    KC_KP_COMMA,
+    KC_KP_EQUAL_AS400,  /* equal sign on AS/400 */
+    KC_INT1,
+    KC_INT2,
+    KC_INT3,
+    KC_INT4,
+    KC_INT5,
+    KC_INT6,
+    KC_INT7,
+    KC_INT8,
+    KC_INT9,
+    KC_LANG1,           /* 0x90 */
+    KC_LANG2,
+    KC_LANG3,
+    KC_LANG4,
+    KC_LANG5,
+    KC_LANG6,
+    KC_LANG7,
+    KC_LANG8,
+    KC_LANG9,
+    KC_ALT_ERASE,
+    KC_SYSREQ,
+    KC_CANCEL,
+    KC_CLEAR,
+    KC_PRIOR,
+    KC_RETURN,
+    KC_SEPARATOR,
+    KC_OUT,             /* 0xA0 */
+    KC_OPER,
+    KC_CLEAR_AGAIN,
+    KC_CRSEL,
+    KC_EXSEL,           /* 0xA4 */
+
+    /* Modifiers */
+    KC_LCTRL            = 0xE0,
+    KC_LSHIFT,
+    KC_LALT,
+    KC_LGUI,
+    KC_RCTRL,
+    KC_RSHIFT,
+    KC_RALT,
+    KC_RGUI,
+};
+
+enum layers
+{
+	_STD,
+	_FN
+};
+
+const int l_pins[23] = {
+    14, 1,  30, 24, 28,
+    8,  5,  2,   4, 29,
+    9,  6,  3,   0, 21,
+    16, 13, 12, 10,
+    15, 17, 18, 19,
+};
+
+const uint16_t l_keymaps[][23] = {
+    [_STD] = {
+        KC_Q, KC_W, KC_E, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
+        KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
+        KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q, KC_Q,
+    },
+    [_FN] = {
+        KC_Q, KC_W, KC_E,
+    },
+};
+
+static uint32_t l_keys = 0;
+
+static uint32_t l_keys_snapshot = 0;
+
 static ble_hids_t m_hids;                                   /**< Structure used to identify the HID service. */
 static ble_bas_t  m_bas;                                    /**< Structure used to identify the battery service. */
 static bool       m_in_boot_mode = false;                   /**< Current protocol mode. */
@@ -244,6 +536,8 @@ static sensorsim_cfg_t   m_battery_sim_cfg;                 /**< Battery Level s
 static sensorsim_state_t m_battery_sim_state;               /**< Battery Level sensor simulator state. */
 
 APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. */
+
+APP_TIMER_DEF(m_key_scan_timer_id);                          /**< Battery timer. */
 
 static pm_peer_id_t m_peer_id;                              /**< Device reference handle to the current bonded central. */
 static bool         m_caps_on = false;                      /**< Variable to indicate if Caps Lock is turned on. */
@@ -289,6 +583,8 @@ static uint8_t m_caps_off_key_scan_str[] = /**< Key pattern to be sent when the 
 static buffer_list_t buffer_list;
 
 static void on_hids_evt(ble_hids_t * p_hids, ble_hids_evt_t * p_evt);
+
+static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern);
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -538,6 +834,108 @@ static void battery_level_meas_timeout_handler(void * p_context)
 }
 
 
+// Setup switch pins with pullups
+static void gpio_config(void)
+{
+    nrf_gpio_cfg_sense_input(S01, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S02, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S03, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S04, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S05, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S06, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S07, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S08, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S09, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S10, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S11, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S12, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S13, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S14, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S15, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S16, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S17, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S18, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S19, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S20, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S21, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S22, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S23, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+}
+
+static void key_scan_handler(void * p_context)
+{
+    uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN];
+    int i;
+    int pin;
+    int offset;
+    uint16_t key;
+
+    UNUSED_PARAMETER(p_context);
+
+    l_keys = NRF_GPIO->IN & INPUT_MASK;
+
+    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
+    {
+        if (l_keys != l_keys_snapshot) {
+            l_keys_snapshot = l_keys;
+            memset(data, 0, sizeof(data));
+            offset = 0;
+            for (i = 0; i < 23; i++) {
+                pin = l_pins[i];
+                if (pin >= 0 && (l_keys & 1<<pin) == 0) {
+                    key = l_keymaps[_STD][i];
+                    switch (key) {
+                        case KC_LCTRL:
+                            {
+                                data[MODIFIER_KEY_POS] |= L_CONTROL_KEY_CODE;
+                            } break;
+                        case KC_LSHIFT:
+                            {
+                                data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE;
+                            } break;
+                        case KC_LALT:
+                            {
+                                data[MODIFIER_KEY_POS] |= L_ALT_KEY_CODE;
+                            } break;
+                        case KC_LGUI:
+                            {
+                                data[MODIFIER_KEY_POS] |= L_GUI_KEY_CODE;
+                            } break;
+                        case KC_RCTRL:
+                            {
+                                data[MODIFIER_KEY_POS] |= R_CONTROL_KEY_CODE;
+                            } break;
+                        case KC_RSHIFT:
+                            {
+                                data[MODIFIER_KEY_POS] |= R_SHIFT_KEY_CODE;
+                            } break;
+                        case KC_RALT:
+                            {
+                                data[MODIFIER_KEY_POS] |= R_ALT_KEY_CODE;
+                            } break;
+                        case KC_RGUI:
+                            {
+                                data[MODIFIER_KEY_POS] |= R_GUI_KEY_CODE;
+                            } break;
+                        default:
+                            {
+                                data[SCAN_CODE_POS + offset] = key;
+                                offset++;
+                                if (offset == 6) {
+                                    i = 23;
+                                }
+                            } break;
+                    }
+                }
+            }
+            ble_hids_inp_rep_send(&m_hids,
+                    INPUT_REPORT_KEYS_INDEX,
+                    INPUT_REPORT_KEYS_MAX_LEN,
+                    data);
+        }
+    }
+}
+
 /**@brief Function for the Timer initialization.
  *
  * @details Initializes the timer module.
@@ -553,6 +951,12 @@ static void timers_init(void)
     err_code = app_timer_create(&m_battery_timer_id,
                                 APP_TIMER_MODE_REPEATED,
                                 battery_level_meas_timeout_handler);
+    APP_ERROR_CHECK(err_code);
+
+    // Create key scan timer
+    err_code = app_timer_create(&m_key_scan_timer_id,
+                                APP_TIMER_MODE_REPEATED,
+                                key_scan_handler);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -829,6 +1233,9 @@ static void timers_start(void)
 
     err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
 }
 
 
@@ -893,7 +1300,7 @@ static uint32_t send_key_scan_press_release(ble_hids_t * p_hids,
 
         if (bsp_button_is_pressed(SHIFT_BUTTON_ID))
         {
-            data[MODIFIER_KEY_POS] |= SHIFT_KEY_CODE;
+            data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE;
         }
 
         if (!m_in_boot_mode)
@@ -1684,6 +2091,8 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
+
+    gpio_config();
 
     timers_init();
     buttons_leds_init(&erase_bonds);
