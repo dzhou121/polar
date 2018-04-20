@@ -70,11 +70,100 @@
 
 #define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE                256                                         /**< UART RX buffer size. */
+#define KEY_SCAN_INTERVAL                APP_TIMER_TICKS(1, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
+
+#define SCHED_MAX_EVENT_DATA_SIZE        MAX(APP_TIMER_SCHED_EVT_SIZE, \
+                                             BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
+#ifdef SVCALL_AS_NORMAL_FUNCTION
+#define SCHED_QUEUE_SIZE                 20                                          /**< Maximum number of events in the scheduler queue. More is needed in case of Serialization. */
+#else
+#define SCHED_QUEUE_SIZE                 10                                          /**< Maximum number of events in the scheduler queue. */
+#endif
+
+#define L_S01 7
+#define L_S02 4
+#define L_S03 30
+#define L_S04 24
+#define L_S05 28
+#define L_S06 8
+#define L_S07 5
+#define L_S08 2
+#define L_S09 1
+#define L_S10 29
+#define L_S11 9
+#define L_S12 6
+#define L_S13 3
+#define L_S14 0
+#define L_S15 21
+#define L_S16 16
+#define L_S17 13
+#define L_S18 14
+#define L_S19 10
+#define L_S20 15
+#define L_S21 17
+#define L_S22 18
+#define L_S23 19
+
+#define L_MASK (1<<L_S01 | \
+ 				1<<L_S02 | \
+				1<<L_S03 | \
+				1<<L_S04 | \
+				1<<L_S05 | \
+				1<<L_S06 | \
+				1<<L_S07 | \
+				1<<L_S08 | \
+				1<<L_S09 | \
+				1<<L_S10 | \
+				1<<L_S11 | \
+				1<<L_S12 | \
+				1<<L_S13 | \
+				1<<L_S14 | \
+				1<<L_S15 | \
+				1<<L_S16 | \
+				1<<L_S17 | \
+				1<<L_S18 | \
+				1<<L_S19 | \
+				1<<L_S20 | \
+				1<<L_S21 | \
+				1<<L_S22 | \
+				1<<L_S23)
+
+#define S01 L_S01
+#define S02 L_S02
+#define S03 L_S03
+#define S04 L_S04
+#define S05 L_S05
+#define S06 L_S06
+#define S07 L_S07
+#define S08 L_S08
+#define S09 L_S09
+#define S10 L_S10
+#define S11 L_S11
+#define S12 L_S12
+#define S13 L_S13
+#define S14 L_S14
+#define S15 L_S15
+#define S16 L_S16
+#define S17 L_S17
+#define S18 L_S18
+#define S19 L_S19
+#define S20 L_S20
+#define S21 L_S21
+#define S22 L_S22
+#define S23 L_S23
+
+#define INPUT_MASK L_MASK
+
+APP_TIMER_DEF(m_key_scan_timer_id);                          /**< Battery timer. */
 
 static ble_nus_t                        m_nus;                                      /**< Structure to identify the Nordic UART Service. */
 static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;    /**< Handle of the current connection. */
 
 static ble_uuid_t                       m_adv_uuids[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
+
+/* static uint32_t r_keys = 0; */
+
+/* static uint32_t r_keys_snapshot = 0; */
 
 
 /**@brief Function for assert macro callback.
@@ -495,35 +584,6 @@ void uart_event_handle(app_uart_evt_t * p_event)
             break;
     }
 }
-/**@snippet [Handling the data received over UART] */
-
-
-/**@brief  Function for initializing the UART module.
- */
-/**@snippet [UART Initialization] */
-static void uart_init(void)
-{
-    uint32_t                     err_code;
-    const app_uart_comm_params_t comm_params =
-    {
-        RX_PIN_NUMBER,
-        TX_PIN_NUMBER,
-        RTS_PIN_NUMBER,
-        CTS_PIN_NUMBER,
-        APP_UART_FLOW_CONTROL_DISABLED,
-        false,
-        UART_BAUDRATE_BAUDRATE_Baud115200
-    };
-
-    APP_UART_FIFO_INIT( &comm_params,
-                       UART_RX_BUF_SIZE,
-                       UART_TX_BUF_SIZE,
-                       uart_event_handle,
-                       APP_IRQ_PRIORITY_LOWEST,
-                       err_code);
-    APP_ERROR_CHECK(err_code);
-}
-/**@snippet [UART Initialization] */
 
 
 /**@brief Function for initializing the Advertising functionality.
@@ -575,6 +635,75 @@ static void buttons_leds_init(bool * p_erase_bonds)
 }
 
 
+// Setup switch pins with pullups
+static void gpio_config(void)
+{
+    nrf_gpio_cfg_sense_input(S01, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S02, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S03, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S04, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S05, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S06, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S07, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S08, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S09, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S10, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S11, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S12, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S13, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S14, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S15, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S16, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S17, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S18, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S19, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S20, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S21, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S22, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(S23, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+}
+
+/* static void key_scan_handler(void * p_context) */
+/* { */
+/*     uint8_t data[4]; */
+/*     r_keys = NRF_GPIO->IN & INPUT_MASK; */
+/*     if (m_conn_handle != BLE_CONN_HANDLE_INVALID) */
+/*     { */
+/*         if (r_keys != r_keys_snapshot) { */
+/*             r_keys_snapshot = r_keys; */
+/*             data[0] = r_keys >> 24; */
+/*             data[1] = r_keys >> 16; */
+/*             data[2] = r_keys >>  8; */
+/*             data[3] = r_keys; */
+/*             ble_nus_string_send(&m_nus, data, 4); */
+/*         } */
+/*     } */
+/* } */
+
+
+/**@brief Function for the Event Scheduler initialization.
+ */
+/* static void scheduler_init(void) */
+/* { */
+/*     APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE); */
+/* } */
+
+
+static void timers_init(void)
+{
+    // Initialize timer module, making it use the scheduler.
+    // APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+
+    /* uint32_t err_code; */
+    /* // Create key scan timer */
+    /* err_code = app_timer_create(&m_key_scan_timer_id, */
+    /*                             APP_TIMER_MODE_REPEATED, */
+    /*                             key_scan_handler); */
+    /* APP_ERROR_CHECK(err_code); */
+}
+
+
 /**@brief Function for placing the application in low power state while waiting for events.
  */
 static void power_manage(void)
@@ -591,9 +720,10 @@ int main(void)
     uint32_t err_code;
     bool erase_bonds;
 
+    gpio_config();
     // Initialize.
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
-    uart_init();
+    timers_init();
+    //scheduler_init();
 
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
@@ -605,6 +735,8 @@ int main(void)
     printf("\r\nUART Start!\r\n");
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
+
+    /* app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL); */
 
     // Enter main loop.
     for (;;)

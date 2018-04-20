@@ -562,21 +562,33 @@ enum layers
 	_FN
 };
 
-const int l_pins[23] = {
+const int pins[46] = {
           14,     15,     10,      5,      2,
           13,      8,      7,      4,      1,
           19,      9,      6,      3,      0,
                   30,     29,     28,     25,
                   21,     22,     23,     24,
+
+           7,      4,     30,     24,     28,
+           8,      5,      2,      1,     29,
+           9,      6,      3,      0,      21,
+          16,     13,     14,     10,
+          15,     17,     18,     19,
 };
 
-const uint16_t l_keymaps[][23] = {
+const uint16_t keymaps[][46] = {
     [_STD] = {
         KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,
         KC_A,   KC_S,   KC_D,   KC_F,   KC_G,
         KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,
                 KC_W,   KC_E,   KC_Q, KC_LSHIFT,
                 KC_W,   KC_E,   KC_Q,   KC_Q,
+
+        KC_Y,   KC_I,   KC_O,   KC_P,   KC_T,
+        KC_H,   KC_J,   KC_K,   KC_K,   KC_G,
+        KC_N,   KC_M,   KC_L,   KC_V,   KC_B,
+        KC_W,   KC_E,   KC_Q, KC_LSHIFT,
+        KC_W,   KC_E,   KC_Q,   KC_Q,
     },
     [_FN] = {
         KC_Q, KC_W, KC_E,
@@ -584,8 +596,9 @@ const uint16_t l_keymaps[][23] = {
 };
 
 static uint32_t l_keys = 0;
-
 static uint32_t l_keys_snapshot = 0;
+static uint32_t r_keys = 0;
+static uint32_t r_keys_snapshot = 0;
 
 #define MIN_CONNECTION_INTERVAL MSEC_TO_UNITS(20, UNIT_1_25_MS) /**< Determines minimum connection interval in millisecond. */
 #define MAX_CONNECTION_INTERVAL MSEC_TO_UNITS(75, UNIT_1_25_MS) /**< Determines maximum connection interval in millisecond. */
@@ -1004,6 +1017,7 @@ static void key_scan_handler(void * p_context)
     int pin;
     int offset;
     uint16_t key;
+    uint32_t keys;
 
     UNUSED_PARAMETER(p_context);
 
@@ -1011,14 +1025,20 @@ static void key_scan_handler(void * p_context)
 
     if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
     {
-        if (l_keys != l_keys_snapshot) {
+        if (l_keys != l_keys_snapshot || r_keys != r_keys_snapshot) {
             l_keys_snapshot = l_keys;
+            r_keys_snapshot = r_keys;
             memset(data, 0, sizeof(data));
             offset = 0;
-            for (i = 0; i < 23; i++) {
-                pin = l_pins[i];
-                if (pin >= 0 && (l_keys & 1<<pin) == 0) {
-                    key = l_keymaps[_STD][i];
+            for (i = 0; i < 46; i++) {
+                if (i < 23) {
+                    keys = l_keys;
+                } else {
+                    keys = r_keys;
+                }
+                pin = pins[i];
+                if (pin >= 0 && (keys & 1<<pin) == 0) {
+                    key = keymaps[_STD][i];
                     switch (key) {
                         case KC_LCTRL:
                             {
@@ -1057,7 +1077,7 @@ static void key_scan_handler(void * p_context)
                                 data[SCAN_CODE_POS + offset] = key;
                                 offset++;
                                 if (offset == 6) {
-                                    i = 23;
+                                    i = 46;
                                 }
                             } break;
                     }
@@ -2452,10 +2472,10 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
             break;
 
         case BLE_NUS_C_EVT_NUS_RX_EVT:
-            for (uint32_t i = 0; i < p_ble_nus_evt->data_len; i++)
-            {
-                while (app_uart_put( p_ble_nus_evt->p_data[i]) != NRF_SUCCESS);
-            }
+            r_keys = ((uint32_t)(p_ble_nus_evt->p_data[0]))<<24 | \
+            ((uint32_t)(p_ble_nus_evt->p_data[1])) << 16 | \
+            ((uint32_t)(p_ble_nus_evt->p_data[2])) <<  8 | \
+            ((uint32_t)(p_ble_nus_evt->p_data[3]));
             break;
 
         case BLE_NUS_C_EVT_DISCONNECTED:
