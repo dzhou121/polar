@@ -11,3 +11,4 @@ ftp-lib-table
 *.dsn
 .DS_Store
 _build/
+gerber/

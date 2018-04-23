@@ -1,5 +1,5 @@
-Drill report for /Users/Lulu/interphase/left/interphase.kicad_pcb
-Created on Wednesday, 11 April 2018 'amt' 07:59:19
+Drill report for /Users/Lulu/nRF5_SDK_12/examples/polar/pcb/left/interphase.kicad_pcb
+Created on Monday, 23 April 2018 'amt' 04:38:19
 
 Copper Layer Stackup:
     =============================================================
@@ -10,11 +10,12 @@ Copper Layer Stackup:
 Drill file 'interphase.drl' contains
     plated through holes:
     =============================================================
-    T1  0.40mm  0.016"  (15 holes)
-    T2  1.00mm  0.039"  (4 holes)
-    T3  1.50mm  0.059"  (62 holes)
+    T1  0.40mm  0.016"  (13 holes)
+    T2  0.90mm  0.035"  (3 holes)
+    T3  1.00mm  0.039"  (4 holes)
+    T4  1.50mm  0.059"  (62 holes)
 
-    Total plated holes count 81
+    Total plated holes count 82
 
 
 Drill file 'interphase-NPTH.drl' contains

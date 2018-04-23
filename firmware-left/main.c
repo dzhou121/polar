@@ -1030,7 +1030,7 @@ static void key_scan_handler(void * p_context)
             r_keys_snapshot = r_keys;
             memset(data, 0, sizeof(data));
             offset = 0;
-            for (i = 0; i < 46; i++) {
+            for (i = 0; i < 40; i++) {
                 if (i < 23) {
                     keys = l_keys;
                 } else {

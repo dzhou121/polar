@@ -34,6 +34,7 @@ LIBS:valves
 LIBS:core51822b
 LIBS:switches
 LIBS:mcp1640
+LIBS:interphase-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -894,11 +895,7 @@ col6
 Wire Wire Line
 	700  5400 700  5300
 Wire Wire Line
-	1150 5300 1650 5300
-Connection ~ 1450 5300
-Wire Wire Line
 	1650 4900 1550 4900
-Connection ~ 1550 5300
 Wire Wire Line
 	1950 4900 2250 4900
 Wire Wire Line
@@ -918,19 +915,13 @@ Wire Wire Line
 	2950 5100 2950 5050
 Connection ~ 2950 5050
 Wire Wire Line
-	1500 5900 3350 5900
-Connection ~ 1500 5900
+	1900 5900 3350 5900
 Wire Wire Line
 	2950 5900 2950 5800
 Connection ~ 2250 5900
 Wire Wire Line
 	3350 5900 3350 5600
 Connection ~ 2950 5900
-Wire Wire Line
-	1650 5450 1900 5450
-Wire Wire Line
-	1650 5300 1650 5450
-Connection ~ 1650 5300
 Wire Wire Line
 	10500 650  10500 950 
 Wire Wire Line
@@ -1048,7 +1039,7 @@ Wire Wire Line
 Wire Wire Line
 	9800 950  9850 950 
 Wire Wire Line
-	9850 950  9850 3350
+	9850 950  9850 4100
 Wire Wire Line
 	10400 950  10450 950 
 Wire Wire Line
@@ -1113,7 +1104,6 @@ Wire Wire Line
 	9200 1550 9250 1550
 Connection ~ 9250 1550
 Connection ~ 700  5900
-Connection ~ 1050 5300
 Wire Wire Line
 	4700 1900 4700 3250
 Wire Wire Line
@@ -1148,7 +1138,6 @@ Wire Wire Line
 Connection ~ 8050 2750
 Wire Wire Line
 	7450 950  7450 3700
-Connection ~ 1150 5300
 Wire Wire Line
 	700  5700 700  5900
 $Comp
@@ -1186,12 +1175,12 @@ Wire Wire Line
 $Comp
 L +3.3V #PWR07
 U 1 1 5AD8D001
-P 700 5300
-F 0 "#PWR07" H 700 5150 50  0001 C CNN
-F 1 "+3.3V" H 700 5440 50  0000 C CNN
-F 2 "" H 700 5300 50  0001 C CNN
-F 3 "" H 700 5300 50  0001 C CNN
-	1    700  5300
+P 800 4900
+F 0 "#PWR07" H 800 4750 50  0001 C CNN
+F 1 "+3.3V" H 800 5040 50  0000 C CNN
+F 2 "" H 800 4900 50  0001 C CNN
+F 3 "" H 800 4900 50  0001 C CNN
+	1    800  4900
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1205,4 +1194,20 @@ F 3 "" H 700 5900 50  0001 C CNN
 	1    700  5900
 	1    0    0    -1  
 $EndComp
+$Comp
+L SW_SPDT SW1
+U 1 1 5ADD68E1
+P 800 5100
+F 0 "SW1" H 800 5270 50  0000 C CNN
+F 1 "SW_SPDT" H 800 4900 50  0000 C CNN
+F 2 "Buttons_Switches_SMD:SW_SPDT_PCM12" H 800 5100 50  0001 C CNN
+F 3 "" H 800 5100 50  0001 C CNN
+	1    800  5100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1650 5450 1900 5450
+Connection ~ 1650 5300
+Wire Wire Line
+	1650 5300 1650 5450
 $EndSCHEMATC
