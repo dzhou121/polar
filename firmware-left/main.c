@@ -75,9 +75,11 @@
 #include "bsp.h"
 #include "sensorsim.h"
 #include "bsp_btn_ble.h"
-#include "app_scheduler.h"
-#include "softdevice_handler_appsh.h"
-#include "app_timer_appsh.h"
+/* #include "app_scheduler.h" */
+/* #include "softdevice_handler_appsh.h" */
+#include "softdevice_handler.h"
+#include "app_timer.h"
+/* #include "app_timer_appsh.h" */
 #include "peer_manager.h"
 #include "app_button.h"
 #include "fds.h"
@@ -97,7 +99,7 @@
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT                       /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #endif
 
-#define CENTRAL_LINK_COUNT               0                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+#define CENTRAL_LINK_COUNT               1                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 #define PERIPHERAL_LINK_COUNT            1                                          /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define UART_TX_BUF_SIZE                 256                                        /**< UART TX buffer size. */
@@ -345,16 +347,6 @@
 #define INPUT_MASK R_MASK
 
 /** @} */
-
-typedef enum
-{
-    BLE_NO_ADV,             /**< No advertising running. */
-    BLE_DIRECTED_ADV,       /**< Direct advertising to the latest central. */
-    BLE_FAST_ADV_WHITELIST, /**< Advertising with whitelist. */
-    BLE_FAST_ADV,           /**< Fast advertising running. */
-    BLE_SLOW_ADV,           /**< Slow advertising running. */
-    BLE_SLEEP,              /**< Go to system-off. */
-} ble_advertising_mode_t;
 
 /** Abstracts buffer element */
 typedef struct hid_key_buffer
@@ -608,8 +600,8 @@ static uint32_t r_keys_snapshot = 0;
 #define UUID32_SIZE             4                               /**< Size of 32 bit UUID */
 #define UUID128_SIZE            16                              /**< Size of 128 bit UUID */
 
-static ble_nus_c_t              m_ble_nus_c;                    /**< Instance of NUS service. Must be passed to all NUS_C API calls. */
-static ble_db_discovery_t       m_ble_db_discovery;             /**< Instance of database discovery module. Must be passed to all db_discovert API calls */
+static ble_nus_c_t              m_ble_nus_c;                    //< Instance of NUS service. Must be passed to all NUS_C API calls. */
+static ble_db_discovery_t m_ble_db_discovery[CENTRAL_LINK_COUNT + PERIPHERAL_LINK_COUNT]; //< list of DB structures used by the database discovery module. 
 
 /**
  * @brief Connection parameters requested for connection.
@@ -618,7 +610,7 @@ static const ble_gap_conn_params_t m_connection_param =
   {
     (uint16_t)MIN_CONNECTION_INTERVAL,  // Minimum connection
     (uint16_t)MAX_CONNECTION_INTERVAL,  // Maximum connection
-    (uint16_t)SLAVE_LATENCY,            // Slave latency
+    0,            // Slave latency
     (uint16_t)SUPERVISION_TIMEOUT       // Supervision time-out
   };
 
@@ -661,12 +653,7 @@ APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. 
 
 APP_TIMER_DEF(m_key_scan_timer_id);                          /**< Battery timer. */
 
-static pm_peer_id_t m_peer_id;                              /**< Device reference handle to the current bonded central. */
-static bool         m_caps_on = false;                      /**< Variable to indicate if Caps Lock is turned on. */
-
-static pm_peer_id_t   m_whitelist_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];  /**< List of peers currently in the whitelist. */
-static uint32_t       m_whitelist_peer_cnt;                                 /**< Number of peers currently in the whitelist. */
-static bool           m_is_wl_changed;                                      /**< Indicates if the whitelist has been changed since last time it has been updated in the Peer Manager. */
+static bool         m_caps_on = false;                      //< Variable to indicate if Caps Lock is turned on. */
 
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
 
@@ -680,7 +667,7 @@ static uint8_t m_sample_key_press_scan_str[] = /**< Key pattern to be sent when 
     0x28                                       /* Key Return */
 };
 
-static uint8_t m_caps_on_key_scan_str[] = /**< Key pattern to be sent when the output report has been written with the CAPS LOCK bit set. */
+static uint8_t m_caps_on_key_scan_str[] = //< Key pattern to be sent when the output report has been written with the CAPS LOCK bit set. */
 {
     0x06,                                 /* Key C */
     0x04,                                 /* Key a */
@@ -690,7 +677,7 @@ static uint8_t m_caps_on_key_scan_str[] = /**< Key pattern to be sent when the o
     0x11,                                 /* Key n */
 };
 
-static uint8_t m_caps_off_key_scan_str[] = /**< Key pattern to be sent when the output report has been written with the CAPS LOCK bit cleared. */
+static uint8_t m_caps_off_key_scan_str[] = //< Key pattern to be sent when the output report has been written with the CAPS LOCK bit cleared. */
 {
     0x06,                                  /* Key C */
     0x04,                                  /* Key a */
@@ -725,31 +712,6 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 }
 
 
-/**@brief Fetch the list of peer manager peer IDs.
- *
- * @param[inout] p_peers   The buffer where to store the list of peer IDs.
- * @param[inout] p_size    In: The size of the @p p_peers buffer.
- *                         Out: The number of peers copied in the buffer.
- */
-static void peer_list_get(pm_peer_id_t * p_peers, uint32_t * p_size)
-{
-    pm_peer_id_t peer_id;
-    uint32_t     peers_to_copy;
-
-    peers_to_copy = (*p_size < BLE_GAP_WHITELIST_ADDR_MAX_COUNT) ?
-                     *p_size : BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
-
-    peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
-    *p_size = 0;
-
-    while ((peer_id != PM_PEER_ID_INVALID) && (peers_to_copy--))
-    {
-        p_peers[(*p_size)++] = peer_id;
-        peer_id = pm_next_peer_id_get(peer_id);
-    }
-}
-
-
 /**@brief Function for initiating scanning.
  */
 static void scan_start(void)
@@ -772,24 +734,6 @@ static void scan_start(void)
 static void advertising_start(void)
 {
     ret_code_t ret;
-
-    memset(m_whitelist_peers, PM_PEER_ID_INVALID, sizeof(m_whitelist_peers));
-    m_whitelist_peer_cnt = (sizeof(m_whitelist_peers) / sizeof(pm_peer_id_t));
-
-    peer_list_get(m_whitelist_peers, &m_whitelist_peer_cnt);
-
-    ret = pm_whitelist_set(m_whitelist_peers, m_whitelist_peer_cnt);
-    APP_ERROR_CHECK(ret);
-
-    // Setup the device identies list.
-    // Some SoftDevices do not support this feature.
-    ret = pm_device_identities_list_set(m_whitelist_peers, m_whitelist_peer_cnt);
-    if (ret != NRF_ERROR_NOT_SUPPORTED)
-    {
-        APP_ERROR_CHECK(ret);
-    }
-
-    m_is_wl_changed = false;
 
     ret = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(ret);
@@ -826,24 +770,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
                          ble_conn_state_role(p_evt->conn_handle),
                          p_evt->conn_handle,
                          p_evt->params.conn_sec_succeeded.procedure);
-
-            m_peer_id = p_evt->peer_id;
-
-            // Note: You should check on what kind of white list policy your application should use.
-            if (p_evt->params.conn_sec_succeeded.procedure == PM_LINK_SECURED_PROCEDURE_BONDING)
-            {
-                NRF_LOG_INFO("New Bond, add the peer to the whitelist if possible\r\n");
-                NRF_LOG_INFO("\tm_whitelist_peer_cnt %d, MAX_PEERS_WLIST %d\r\n",
-                               m_whitelist_peer_cnt + 1,
-                               BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
-
-                if (m_whitelist_peer_cnt < BLE_GAP_WHITELIST_ADDR_MAX_COUNT)
-                {
-                    // Bonded to a new peer, add it to the whitelist.
-                    m_whitelist_peers[m_whitelist_peer_cnt++] = m_peer_id;
-                    m_is_wl_changed = true;
-                }
-            }
         } break;
 
         case PM_EVT_CONN_SEC_FAILED:
@@ -879,7 +805,7 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 
         case PM_EVT_PEERS_DELETE_SUCCEEDED:
         {
-            advertising_start();
+            adv_scan_start();
         } break;
 
         case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
@@ -1030,7 +956,7 @@ static void key_scan_handler(void * p_context)
             r_keys_snapshot = r_keys;
             memset(data, 0, sizeof(data));
             offset = 0;
-            for (i = 0; i < 40; i++) {
+            for (i = 0; i < 23; i++) {
                 if (i < 23) {
                     keys = l_keys;
                 } else {
@@ -1100,7 +1026,8 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module, making it use the scheduler.
-    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+    /* APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true); */
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
 
     // Create battery timer.
     err_code = app_timer_create(&m_battery_timer_id,
@@ -1797,60 +1724,9 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_SLOW
 
-        case BLE_ADV_EVT_FAST_WHITELIST:
-            NRF_LOG_INFO("BLE_ADV_EVT_FAST_WHITELIST\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_WHITELIST);
-            APP_ERROR_CHECK(err_code);
-            break; //BLE_ADV_EVT_FAST_WHITELIST
-
-        case BLE_ADV_EVT_SLOW_WHITELIST:
-            NRF_LOG_INFO("BLE_ADV_EVT_SLOW_WHITELIST\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_WHITELIST);
-            APP_ERROR_CHECK(err_code);
-            break; //BLE_ADV_EVT_SLOW_WHITELIST
-
         case BLE_ADV_EVT_IDLE:
             sleep_mode_enter();
             break; //BLE_ADV_EVT_IDLE
-
-        case BLE_ADV_EVT_WHITELIST_REQUEST:
-        {
-            ble_gap_addr_t whitelist_addrs[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
-            ble_gap_irk_t  whitelist_irks[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
-            uint32_t       addr_cnt = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
-            uint32_t       irk_cnt  = BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
-
-            err_code = pm_whitelist_get(whitelist_addrs, &addr_cnt,
-                                        whitelist_irks,  &irk_cnt);
-            APP_ERROR_CHECK(err_code);
-            NRF_LOG_DEBUG("pm_whitelist_get returns %d addr in whitelist and %d irk whitelist\r\n",
-                           addr_cnt,
-                           irk_cnt);
-
-            // Apply the whitelist.
-            err_code = ble_advertising_whitelist_reply(whitelist_addrs, addr_cnt,
-                                                       whitelist_irks,  irk_cnt);
-            APP_ERROR_CHECK(err_code);
-        } break; //BLE_ADV_EVT_WHITELIST_REQUEST
-
-        case BLE_ADV_EVT_PEER_ADDR_REQUEST:
-        {
-            pm_peer_data_bonding_t peer_bonding_data;
-
-            // Only Give peer address if we have a handle to the bonded peer.
-            if (m_peer_id != PM_PEER_ID_INVALID)
-            {
-                err_code = pm_peer_data_bonding_load(m_peer_id, &peer_bonding_data);
-                if (err_code != NRF_ERROR_NOT_FOUND)
-                {
-                    APP_ERROR_CHECK(err_code);
-
-                    ble_gap_addr_t * p_peer_addr = &(peer_bonding_data.peer_ble_id.id_addr_info);
-                    err_code = ble_advertising_peer_addr_reply(p_peer_addr);
-                    APP_ERROR_CHECK(err_code);
-                }
-            }
-        } break; //BLE_ADV_EVT_PEER_ADDR_REQUEST
 
         default:
             break;
@@ -1959,25 +1835,13 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
 
             if (is_uuid_present(&m_nus_uuid, p_adv_report))
             {
+                static uint8_t * p_key = m_sample_key_press_scan_str;
+                keys_send(2, p_key);
 
                 err_code = sd_ble_gap_connect(&p_adv_report->peer_addr,
                                               &m_scan_params,
                                               &m_connection_param);
 
-                if (err_code == NRF_SUCCESS)
-                {
-                    // scan is automatically stopped by the connect
-                    err_code = bsp_indication_set(BSP_INDICATE_IDLE);
-                    APP_ERROR_CHECK(err_code);
-                    printf("Connecting to target %02x%02x%02x%02x%02x%02x\r\n",
-                             p_adv_report->peer_addr.addr[0],
-                             p_adv_report->peer_addr.addr[1],
-                             p_adv_report->peer_addr.addr[2],
-                             p_adv_report->peer_addr.addr[3],
-                             p_adv_report->peer_addr.addr[4],
-                             p_adv_report->peer_addr.addr[5]
-                             );
-                }
             }
         }break; // BLE_GAP_EVT_ADV_REPORT
 
@@ -1986,8 +1850,11 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
 
+            static uint8_t * p_key = m_sample_key_press_scan_str;
+            keys_send(1, p_key);
+
             // start discovery of services. The NUS Client waits for a discovery result
-            err_code = ble_db_discovery_start(&m_ble_db_discovery, p_ble_evt->evt.gap_evt.conn_handle);
+            err_code = ble_db_discovery_start(&m_ble_db_discovery[p_gap_evt->conn_handle], p_ble_evt->evt.gap_evt.conn_handle);
             APP_ERROR_CHECK(err_code);
             break; // BLE_GAP_EVT_CONNECTED
 
@@ -2072,32 +1939,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected\r\n");
-            // Dequeue all keys without transmission.
-            (void) buffer_dequeue(false);
-
-            m_conn_handle = BLE_CONN_HANDLE_INVALID;
-
-            // Reset m_caps_on variable. Upon reconnect, the HID host will re-send the Output
-            // report containing the Caps lock state.
-            m_caps_on = false;
-            // disabling alert 3. signal - used for capslock ON
-            err_code = bsp_indication_set(BSP_INDICATE_ALERT_OFF);
-            APP_ERROR_CHECK(err_code);
-
-            if (m_is_wl_changed)
-            {
-                // The whitelist has been modified, update it in the Peer Manager.
-                err_code = pm_whitelist_set(m_whitelist_peers, m_whitelist_peer_cnt);
-                APP_ERROR_CHECK(err_code);
-
-                err_code = pm_device_identities_list_set(m_whitelist_peers, m_whitelist_peer_cnt);
-                if (err_code != NRF_ERROR_NOT_SUPPORTED)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
-
-                m_is_wl_changed = false;
-            }
             break; // BLE_GAP_EVT_DISCONNECTED
 
         case BLE_GATTC_EVT_TIMEOUT:
@@ -2207,7 +2048,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 
         if (conn_handle < CENTRAL_LINK_COUNT + PERIPHERAL_LINK_COUNT)
         {
-            ble_db_discovery_on_ble_evt(&m_ble_db_discovery, p_ble_evt);
+            ble_db_discovery_on_ble_evt(&m_ble_db_discovery[conn_handle], p_ble_evt);
         }
         ble_nus_c_on_ble_evt(&m_ble_nus_c,p_ble_evt);
 
@@ -2251,7 +2092,8 @@ static void ble_stack_init(void)
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
+    /* SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true); */
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
 
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
@@ -2281,10 +2123,10 @@ static void ble_stack_init(void)
 
 /**@brief Function for the Event Scheduler initialization.
  */
-static void scheduler_init(void)
-{
-    APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-}
+/* static void scheduler_init(void) */
+/* { */
+/*     APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE); */
+/* } */
 
 
 /**@brief Function for handling events from the BSP module.
@@ -2309,17 +2151,6 @@ static void bsp_event_handler(bsp_event_t event)
             if (err_code != NRF_ERROR_INVALID_STATE)
             {
                 APP_ERROR_CHECK(err_code);
-            }
-            break;
-
-        case BSP_EVENT_WHITELIST_OFF:
-            if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
-            {
-                err_code = ble_advertising_restart_without_whitelist();
-                if (err_code != NRF_ERROR_INVALID_STATE)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
             }
             break;
 
@@ -2406,7 +2237,6 @@ static void advertising_init(void)
     advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
     memset(&options, 0, sizeof(options));
-    options.ble_adv_whitelist_enabled      = true;
     options.ble_adv_directed_enabled       = true;
     options.ble_adv_directed_slow_enabled  = false;
     options.ble_adv_directed_slow_interval = 0;
@@ -2552,7 +2382,7 @@ int main(void)
     db_discovery_init();
     ble_stack_init();
     nus_c_init();
-    scheduler_init();
+    /* scheduler_init(); */
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)
     {
@@ -2574,7 +2404,7 @@ int main(void)
     // Enter main loop.
     for (;;)
     {
-        app_sched_execute();
+        /* app_sched_execute(); */
         if (NRF_LOG_PROCESS() == false)
         {
             power_manage();
