@@ -4,6 +4,7 @@ OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../../../../..
 PROJ_DIR := ../../..
+TMK_ROOT := ../../../../../../../tmk_core
 
 $(OUTPUT_DIRECTORY)/nrf51422_xxac.out: \
   LINKER_SCRIPT  := ble_app_hids_keyboard_gcc_nrf51.ld
@@ -39,6 +40,10 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp_nfc.c \
   $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/keyboard_timer.c \
+  $(PROJ_DIR)/led.c \
+  $(PROJ_DIR)/matrix_plain.c \
+  $(PROJ_DIR)/keymap_plain.c \
   $(SDK_ROOT)/external/segger_rtt/RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
@@ -68,6 +73,19 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/ble_services/ble_nus_c/ble_nus_c.c \
   $(SDK_ROOT)/components/softdevice/common/softdevice_handler/softdevice_handler.c \
   $(SDK_ROOT)/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c \
+  $(TMK_ROOT)/common/action_macro.c \
+  $(TMK_ROOT)/common/action_util.c \
+  $(TMK_ROOT)/common/action_layer.c \
+  $(TMK_ROOT)/common/action_tapping.c \
+  $(TMK_ROOT)/common/util.c \
+  $(TMK_ROOT)/common/keymap.c \
+  $(TMK_ROOT)/common/debug.c \
+  $(TMK_ROOT)/common/print.c \
+  $(TMK_ROOT)/common/host.c \
+  $(TMK_ROOT)/common/matrix.c \
+  $(TMK_ROOT)/common/hook.c \
+  $(TMK_ROOT)/common/action.c \
+  $(TMK_ROOT)/common/keyboard.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -129,6 +147,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/drivers_nrf/timer \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/drivers_nrf/pwm \
+  $(PROJ_DIR) \
   ../config \
   $(SDK_ROOT)/components/libraries/usbd/class/cdc \
   $(SDK_ROOT)/components/libraries/csense \
@@ -175,6 +194,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/softdevice/common/softdevice_handler \
   $(SDK_ROOT)/components/ble/ble_services/ble_hrs \
   $(SDK_ROOT)/components/libraries/log/src \
+  $(TMK_ROOT)/common \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -196,6 +216,10 @@ CFLAGS += -mfloat-abi=soft
 # keep every function in separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
+CFLAGS += -DMATRIX_COLS=14
+CFLAGS += -DMATRIX_ROWS=5
+CFLAGS += -DNO_PRINT
+CFLAGS += -DNO_DEBUG
 
 # C++ flags common to all targets
 CXXFLAGS += \
@@ -211,6 +235,10 @@ ASMFLAGS += -DSWI_DISABLE0
 ASMFLAGS += -DNRF51422
 ASMFLAGS += -DBSP_UART_SUPPORT
 ASMFLAGS += -DNRF_SD_BLE_API_VERSION=2
+ASMFLAGS += -DMATRIX_COLS=14
+ASMFLAGS += -DMATRIX_ROWS=5
+ASMFLAGS += -DNO_PRINT
+ASMFLAGS += -DNO_DEBUG
 
 # Linker flags
 LDFLAGS += -mthumb -mabi=aapcs -L $(TEMPLATE_PATH) -T$(LINKER_SCRIPT)

@@ -86,6 +86,9 @@
 #include "fstorage.h"
 #include "ble_conn_state.h"
 #include "ble_nus_c.h"
+#include "keyboard.h"
+#include "host.h"
+#include "host_driver.h"
 
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
@@ -370,184 +373,6 @@ typedef struct
 
 STATIC_ASSERT(sizeof(buffer_list_t) % 4 == 0);
 
-enum hid_keyboard_keypad_usage {
-    KC_NO               = 0x00,
-    KC_ROLL_OVER,
-    KC_POST_FAIL,
-    KC_UNDEFINED,
-    KC_A,
-    KC_B,
-    KC_C,
-    KC_D,
-    KC_E,
-    KC_F,
-    KC_G,
-    KC_H,
-    KC_I,
-    KC_J,
-    KC_K,
-    KC_L,
-    KC_M,               /* 0x10 */
-    KC_N,
-    KC_O,
-    KC_P,
-    KC_Q,
-    KC_R,
-    KC_S,
-    KC_T,
-    KC_U,
-    KC_V,
-    KC_W,
-    KC_X,
-    KC_Y,
-    KC_Z,
-    KC_1,
-    KC_2,
-    KC_3,               /* 0x20 */
-    KC_4,
-    KC_5,
-    KC_6,
-    KC_7,
-    KC_8,
-    KC_9,
-    KC_0,
-    KC_ENTER,
-    KC_ESCAPE,
-    KC_BSPACE,
-    KC_TAB,
-    KC_SPACE,
-    KC_MINUS,
-    KC_EQUAL,
-    KC_LBRACKET,
-    KC_RBRACKET,        /* 0x30 */
-    KC_BSLASH,          /* \ (and |) */
-    KC_NONUS_HASH,      /* Non-US # and ~ (Typically near the Enter key) */
-    KC_SCOLON,          /* ; (and :) */
-    KC_QUOTE,           /* ' and " */
-    KC_GRAVE,           /* Grave accent and tilde */
-    KC_COMMA,           /* , and < */
-    KC_DOT,             /* . and > */
-    KC_SLASH,           /* / and ? */
-    KC_CAPSLOCK,
-    KC_F1,
-    KC_F2,
-    KC_F3,
-    KC_F4,
-    KC_F5,
-    KC_F6,
-    KC_F7,              /* 0x40 */
-    KC_F8,
-    KC_F9,
-    KC_F10,
-    KC_F11,
-    KC_F12,
-    KC_PSCREEN,
-    KC_SCROLLLOCK,
-    KC_PAUSE,
-    KC_INSERT,
-    KC_HOME,
-    KC_PGUP,
-    KC_DELETE,
-    KC_END,
-    KC_PGDOWN,
-    KC_RIGHT,
-    KC_LEFT,            /* 0x50 */
-    KC_DOWN,
-    KC_UP,
-    KC_NUMLOCK,
-    KC_KP_SLASH,
-    KC_KP_ASTERISK,
-    KC_KP_MINUS,
-    KC_KP_PLUS,
-    KC_KP_ENTER,
-    KC_KP_1,
-    KC_KP_2,
-    KC_KP_3,
-    KC_KP_4,
-    KC_KP_5,
-    KC_KP_6,
-    KC_KP_7,
-    KC_KP_8,            /* 0x60 */
-    KC_KP_9,
-    KC_KP_0,
-    KC_KP_DOT,
-    KC_NONUS_BSLASH,    /* Non-US \ and | (Typically near the Left-Shift key) */
-    KC_APPLICATION,
-    KC_POWER,
-    KC_KP_EQUAL,
-    KC_F13,
-    KC_F14,
-    KC_F15,
-    KC_F16,
-    KC_F17,
-    KC_F18,
-    KC_F19,
-    KC_F20,
-    KC_F21,             /* 0x70 */
-    KC_F22,
-    KC_F23,
-    KC_F24,
-    KC_EXECUTE,
-    KC_HELP,
-    KC_MENU,
-    KC_SELECT,
-    KC_STOP,
-    KC_AGAIN,
-    KC_UNDO,
-    KC_CUT,
-    KC_COPY,
-    KC_PASTE,
-    KC_FIND,
-    KC__MUTE,
-    KC__VOLUP,          /* 0x80 */
-    KC__VOLDOWN,
-    KC_LOCKING_CAPS,    /* locking Caps Lock */
-    KC_LOCKING_NUM,     /* locking Num Lock */
-    KC_LOCKING_SCROLL,  /* locking Scroll Lock */
-    KC_KP_COMMA,
-    KC_KP_EQUAL_AS400,  /* equal sign on AS/400 */
-    KC_INT1,
-    KC_INT2,
-    KC_INT3,
-    KC_INT4,
-    KC_INT5,
-    KC_INT6,
-    KC_INT7,
-    KC_INT8,
-    KC_INT9,
-    KC_LANG1,           /* 0x90 */
-    KC_LANG2,
-    KC_LANG3,
-    KC_LANG4,
-    KC_LANG5,
-    KC_LANG6,
-    KC_LANG7,
-    KC_LANG8,
-    KC_LANG9,
-    KC_ALT_ERASE,
-    KC_SYSREQ,
-    KC_CANCEL,
-    KC_CLEAR,
-    KC_PRIOR,
-    KC_RETURN,
-    KC_SEPARATOR,
-    KC_OUT,             /* 0xA0 */
-    KC_OPER,
-    KC_CLEAR_AGAIN,
-    KC_CRSEL,
-    KC_EXSEL,           /* 0xA4 */
-
-    /* Modifiers */
-    KC_LCTRL            = 0xE0,
-    KC_LSHIFT,
-    KC_LALT,
-    KC_LGUI,
-    KC_RCTRL,
-    KC_RSHIFT,
-    KC_RALT,
-    KC_RGUI,
-};
-
 enum layers
 {
 	_STD,
@@ -568,29 +393,29 @@ const int pins[46] = {
           15,     17,     18,     19,
 };
 
-const uint16_t keymaps[][46] = {
-    [_STD] = {
-        KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,
-        KC_A,   KC_S,   KC_D,   KC_F,   KC_G,
-        KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,
-                KC_W,   KC_E,   KC_Q, KC_LSHIFT,
-                KC_W,   KC_E,   KC_Q,   KC_Q,
+/* const uint16_t keymaps[][46] = { */
+/*     [_STD] = { */
+/*         KC_Q,   KC_W,   KC_E,   KC_R,   KC_T, */
+/*         KC_A,   KC_S,   KC_D,   KC_F,   KC_G, */
+/*         KC_Z,   KC_X,   KC_C,   KC_V,   KC_B, */
+/*                 KC_W,   KC_E,   KC_Q, KC_LSHIFT, */
+/*                 KC_W,   KC_E,   KC_Q,   KC_Q, */
 
-        KC_Y,   KC_I,   KC_O,   KC_P,   KC_T,
-        KC_H,   KC_J,   KC_K,   KC_K,   KC_G,
-        KC_N,   KC_M,   KC_L,   KC_V,   KC_B,
-        KC_W,   KC_E,   KC_Q, KC_LSHIFT,
-        KC_W,   KC_E,   KC_Q,   KC_Q,
-    },
-    [_FN] = {
-        KC_Q, KC_W, KC_E,
-    },
-};
+/*         KC_Y,   KC_I,   KC_O,   KC_P,   KC_T, */
+/*         KC_H,   KC_J,   KC_K,   KC_K,   KC_G, */
+/*         KC_N,   KC_M,   KC_L,   KC_V,   KC_B, */
+/*         KC_W,   KC_E,   KC_Q, KC_LSHIFT, */
+/*         KC_W,   KC_E,   KC_Q,   KC_Q, */
+/*     }, */
+/*     [_FN] = { */
+/*         KC_Q, KC_W, KC_E, */
+/*     }, */
+/* }; */
 
-static uint32_t l_keys = 0;
-static uint32_t l_keys_snapshot = 0;
+/* static uint32_t l_keys = 0; */
+/* static uint32_t l_keys_snapshot = 0; */
 static uint32_t r_keys = 0;
-static uint32_t r_keys_snapshot = 0;
+/* static uint32_t r_keys_snapshot = 0; */
 
 #define MIN_CONNECTION_INTERVAL MSEC_TO_UNITS(20, UNIT_1_25_MS) /**< Determines minimum connection interval in millisecond. */
 #define MAX_CONNECTION_INTERVAL MSEC_TO_UNITS(75, UNIT_1_25_MS) /**< Determines maximum connection interval in millisecond. */
@@ -694,6 +519,20 @@ static buffer_list_t buffer_list;
 static void on_hids_evt(ble_hids_t * p_hids, ble_hids_evt_t * p_evt);
 
 static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern);
+
+static uint8_t keyboard_leds(void);
+static void send_keyboard(report_keyboard_t * report);
+static void send_mouse(report_mouse_t * report);
+static void send_system(uint16_t data);
+static void send_consumer(uint16_t data);
+
+host_driver_t driver = {
+        keyboard_leds,
+        send_keyboard,
+        send_mouse,
+        send_system,
+        send_consumer
+};
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -938,83 +777,85 @@ static void gpio_config(void)
 
 static void key_scan_handler(void * p_context)
 {
-    uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN];
-    int i;
-    int pin;
-    int offset;
-    uint16_t key;
-    uint32_t keys;
-
     UNUSED_PARAMETER(p_context);
+    keyboard_task();
+    /* uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN]; */
+    /* int i; */
+    /* int pin; */
+    /* int offset; */
+    /* uint16_t key; */
+    /* uint32_t keys; */
 
-    l_keys = NRF_GPIO->IN & INPUT_MASK;
+    /* UNUSED_PARAMETER(p_context); */
 
-    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
-    {
-        if (l_keys != l_keys_snapshot || r_keys != r_keys_snapshot) {
-            l_keys_snapshot = l_keys;
-            r_keys_snapshot = r_keys;
-            memset(data, 0, sizeof(data));
-            offset = 0;
-            for (i = 0; i < 46; i++) {
-                if (i < 23) {
-                    keys = l_keys;
-                } else {
-                    keys = r_keys;
-                }
-                pin = pins[i];
-                if (pin >= 0 && (keys & 1<<pin) == 0) {
-                    key = keymaps[_STD][i];
-                    switch (key) {
-                        case KC_LCTRL:
-                            {
-                                data[MODIFIER_KEY_POS] |= L_CONTROL_KEY_CODE;
-                            } break;
-                        case KC_LSHIFT:
-                            {
-                                data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE;
-                            } break;
-                        case KC_LALT:
-                            {
-                                data[MODIFIER_KEY_POS] |= L_ALT_KEY_CODE;
-                            } break;
-                        case KC_LGUI:
-                            {
-                                data[MODIFIER_KEY_POS] |= L_GUI_KEY_CODE;
-                            } break;
-                        case KC_RCTRL:
-                            {
-                                data[MODIFIER_KEY_POS] |= R_CONTROL_KEY_CODE;
-                            } break;
-                        case KC_RSHIFT:
-                            {
-                                data[MODIFIER_KEY_POS] |= R_SHIFT_KEY_CODE;
-                            } break;
-                        case KC_RALT:
-                            {
-                                data[MODIFIER_KEY_POS] |= R_ALT_KEY_CODE;
-                            } break;
-                        case KC_RGUI:
-                            {
-                                data[MODIFIER_KEY_POS] |= R_GUI_KEY_CODE;
-                            } break;
-                        default:
-                            {
-                                data[SCAN_CODE_POS + offset] = key;
-                                offset++;
-                                if (offset == 6) {
-                                    i = 46;
-                                }
-                            } break;
-                    }
-                }
-            }
-            ble_hids_inp_rep_send(&m_hids,
-                    INPUT_REPORT_KEYS_INDEX,
-                    INPUT_REPORT_KEYS_MAX_LEN,
-                    data);
-        }
-    }
+    /* l_keys = NRF_GPIO->IN & INPUT_MASK; */
+
+    /* if (m_conn_handle != BLE_CONN_HANDLE_INVALID) */
+    /* { */
+    /*     if (l_keys != l_keys_snapshot || r_keys != r_keys_snapshot) { */
+    /*         l_keys_snapshot = l_keys; */
+    /*         r_keys_snapshot = r_keys; */
+    /*         memset(data, 0, sizeof(data)); */
+    /*         offset = 0; */
+    /*         for (i = 0; i < 46; i++) { */
+    /*             if (i < 23) { */
+    /*                 keys = l_keys; */
+    /*             } else { */
+    /*                 keys = r_keys; */
+    /*             } */
+    /*             pin = pins[i]; */
+    /*             if (pin >= 0 && (keys & 1<<pin) == 0) { */
+    /*                 key = keymaps[_STD][i]; */
+    /*                 switch (key) { */
+    /*                     case KC_LCTRL: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= L_CONTROL_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_LSHIFT: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_LALT: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= L_ALT_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_LGUI: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= L_GUI_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_RCTRL: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= R_CONTROL_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_RSHIFT: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= R_SHIFT_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_RALT: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= R_ALT_KEY_CODE; */
+    /*                         } break; */
+    /*                     case KC_RGUI: */
+    /*                         { */
+    /*                             data[MODIFIER_KEY_POS] |= R_GUI_KEY_CODE; */
+    /*                         } break; */
+    /*                     default: */
+    /*                         { */
+    /*                             data[SCAN_CODE_POS + offset] = key; */
+    /*                             offset++; */
+    /*                             if (offset == 6) { */
+    /*                                 i = 46; */
+    /*                             } */
+    /*                         } break; */
+    /*                 } */
+    /*             } */
+    /*         } */
+    /*         ble_hids_inp_rep_send(&m_hids, */
+    /*                 INPUT_REPORT_KEYS_INDEX, */
+    /*                 INPUT_REPORT_KEYS_MAX_LEN, */
+    /*                 data); */
+    /*     } */
+    /* } */
 }
 
 /**@brief Function for the Timer initialization.
@@ -2308,6 +2149,47 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
     }
 }
 
+void bootloader_jump(void)
+{
+}
+
+uint8_t keyboard_leds()
+{
+    return 0;
+}
+
+void send_keyboard(report_keyboard_t * report)
+{
+    if (!m_in_boot_mode)
+    {
+        ble_hids_inp_rep_send(&m_hids,
+                INPUT_REPORT_KEYS_INDEX,
+                INPUT_REPORT_KEYS_MAX_LEN,
+                report->raw);
+    }
+    else
+    {
+        ble_hids_boot_kb_inp_rep_send(&m_hids,
+                INPUT_REPORT_KEYS_MAX_LEN,
+                report->raw);
+    }
+}
+
+void send_mouse(report_mouse_t * report)
+{
+    // unsupport, and will not support in future.
+}
+
+void send_system(uint16_t data)
+{
+    // may support in future.
+}
+
+void send_consumer(uint16_t data)
+{
+    // may support in future.
+}
+
 /**@brief Function for initializing the NUS Client.
  */
 static void nus_c_init(void)
@@ -2387,6 +2269,8 @@ int main(void)
     sensor_simulator_init();
     conn_params_init();
     buffer_init();
+    keyboard_init();
+    host_set_driver(&driver);
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");
