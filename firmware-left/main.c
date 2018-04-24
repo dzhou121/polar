@@ -956,7 +956,7 @@ static void key_scan_handler(void * p_context)
             r_keys_snapshot = r_keys;
             memset(data, 0, sizeof(data));
             offset = 0;
-            for (i = 0; i < 23; i++) {
+            for (i = 0; i < 46; i++) {
                 if (i < 23) {
                     keys = l_keys;
                 } else {
@@ -1835,13 +1835,9 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
 
             if (is_uuid_present(&m_nus_uuid, p_adv_report))
             {
-                static uint8_t * p_key = m_sample_key_press_scan_str;
-                keys_send(2, p_key);
-
                 err_code = sd_ble_gap_connect(&p_adv_report->peer_addr,
                                               &m_scan_params,
                                               &m_connection_param);
-
             }
         }break; // BLE_GAP_EVT_ADV_REPORT
 
@@ -1849,9 +1845,6 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
             //NRF_LOG_DEBUG("Connected to target\r\n");
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
-
-            static uint8_t * p_key = m_sample_key_press_scan_str;
-            keys_send(1, p_key);
 
             // start discovery of services. The NUS Client waits for a discovery result
             err_code = ble_db_discovery_start(&m_ble_db_discovery[p_gap_evt->conn_handle], p_ble_evt->evt.gap_evt.conn_handle);
