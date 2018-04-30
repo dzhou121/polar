@@ -140,29 +140,46 @@ static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
 static uint32_t gpio_input;
 
+static const uint8_t row_pin_array[MATRIX_ROWS] = {21, 22, 23, 24, 25};
+static const uint8_t column_pin_array[7] = {4, 5, 6, 7, 8, 9, 10};
+
 void matrix_init(void)
 {
+   for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+    {
+        nrf_gpio_cfg_output((uint32_t)row_pin_array[i]);
+        NRF_GPIO->PIN_CNF[(uint32_t)row_pin_array[i]] |= 0x400; //Set pin to be "Disconnected 0 and standard 1"
+        nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);         //Set pin to low
+    }
+    for (uint_fast8_t i = 0; i < 7; i++)
+    {
+        nrf_gpio_cfg_input((uint32_t)column_pin_array[i], NRF_GPIO_PIN_PULLDOWN);
+    }
 }
 
 static void select_row(uint8_t row)
 {
+    nrf_gpio_pin_set((uint32_t)row_pin_array[row]);
 }
 
 static void unselect_rows(void)
 {
+    for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+    {
+        nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);
+    }
 }
 
 static matrix_row_t read_cols(uint8_t row)
 {
     uint16_t result = 0;
-    int pin;
 
-    for (int c = 0; c < MATRIX_COLS; c++) {
-        pin = row_pins[row][c];
-        if (pin >= 0 && (gpio_input & (1 << pin)) == 0) {
-           result |= 1 << c;
-        }
+    for (uint_fast8_t c = 0; c < 7; c++)
+    {
+        if (nrf_gpio_pin_read((uint32_t)column_pin_array[c]))
+            result |= 1 << c;
     }
+
     return result;
 }
 
