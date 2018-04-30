@@ -111,7 +111,7 @@
 #define KEY_PRESS_BUTTON_ID              0                                          /**< Button used as Keyboard key press. */
 #define SHIFT_BUTTON_ID                  1                                          /**< Button used as 'SHIFT' Key. */
 
-#define DEVICE_NAME                      "Polar_Keyboard_Left"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                      "Polar Keyboard"                          /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define NUS_SERVICE_UUID_TYPE   BLE_UUID_TYPE_VENDOR_BEGIN      /**< UUID type for the Nordic UART Service (vendor specific). */
@@ -188,13 +188,7 @@
 #define SCAN_CODE_POS                    2                                           /**< This macro indicates the start position of the key scan code in a HID Report. As per the document titled 'Device Class Definition for Human Interface Devices (HID) V1.11, each report shall have one modifier byte followed by a reserved constant byte and then the key scan code. */
 
 #define L_CONTROL_KEY_CODE                 0x01
-#define L_SHIFT_KEY_CODE                   0x02                                        
-#define L_ALT_KEY_CODE                     1<<2                                        
-#define L_GUI_KEY_CODE                     1<<3
-#define R_CONTROL_KEY_CODE                 1<<4
-#define R_SHIFT_KEY_CODE                   1<<5                                        
-#define R_ALT_KEY_CODE                     1<<6                                        
-#define R_GUI_KEY_CODE                     1<<7
+#define L_SHIFT_KEY_CODE                   0x02
 
 #define MAX_KEYS_IN_ONE_REPORT           (INPUT_REPORT_KEYS_MAX_LEN - SCAN_CODE_POS) /**< Maximum number of key presses that can be sent in one Input Report. */
 
@@ -224,132 +218,6 @@
     {                                          \
         buffer_list.buffer[(i)].p_data = NULL; \
     } while (0)
-
-#define L_LED 23
-
-#define L_S01 12
-#define L_S02 4
-#define L_S03 30
-#define L_S04 24
-#define L_S05 28
-#define L_S06 8
-#define L_S07 5
-#define L_S08 2
-#define L_S09 1
-#define L_S10 29
-#define L_S11 9
-#define L_S12 6
-#define L_S13 3
-#define L_S14 0
-#define L_S15 21
-#define L_S16 16
-#define L_S17 13
-#define L_S18 14
-#define L_S19 10
-#define L_S20 15
-#define L_S21 17
-#define L_S22 18
-#define L_S23 19
-
-#define L_MASK (1<<L_S01 | \
- 				1<<L_S02 | \
-				1<<L_S03 | \
-				1<<L_S04 | \
-				1<<L_S05 | \
-				1<<L_S06 | \
-				1<<L_S07 | \
-				1<<L_S08 | \
-				1<<L_S09 | \
-				1<<L_S10 | \
-				1<<L_S11 | \
-				1<<L_S12 | \
-				1<<L_S13 | \
-				1<<L_S14 | \
-				1<<L_S15 | \
-				1<<L_S16 | \
-				1<<L_S17 | \
-				1<<L_S18 | \
-				1<<L_S19 | \
-				1<<L_S20 | \
-				1<<L_S21 | \
-				1<<L_S22 | \
-				1<<L_S23)
-
-#define R_S01 2
-#define R_S02 5
-#define R_S03 10
-#define R_S04 15
-#define R_S05 14
-#define R_S06 1
-#define R_S07 4
-#define R_S08 7
-#define R_S09 8
-#define R_S10 13
-#define R_S11 0
-#define R_S12 3
-#define R_S13 6
-#define R_S14 9
-#define R_S15 19
-#define R_S16 25
-#define R_S17 29
-#define R_S18 28
-#define R_S19 30
-#define R_S20 24
-#define R_S21 23
-#define R_S22 22
-#define R_S23 21
-
-#define R_MASK (1<<R_S01 | \
- 				1<<R_S02 | \
-				1<<R_S03 | \
-				1<<R_S04 | \
-				1<<R_S05 | \
-				1<<R_S06 | \
-				1<<R_S07 | \
-				1<<R_S08 | \
-				1<<R_S09 | \
-				1<<R_S10 | \
-				1<<R_S11 | \
-				1<<R_S12 | \
-				1<<R_S13 | \
-				1<<R_S14 | \
-				1<<R_S15 | \
-				1<<R_S16 | \
-				1<<R_S17 | \
-				1<<R_S18 | \
-				1<<R_S19 | \
-				1<<R_S20 | \
-				1<<R_S21 | \
-				1<<R_S22 | \
-				1<<R_S23)
-
-#define S01 R_S01
-#define S02 R_S02
-#define S03 R_S03
-#define S04 R_S04
-#define S05 R_S05
-#define S06 R_S06
-#define S07 R_S07
-#define S08 R_S08
-#define S09 R_S09
-#define S10 R_S10
-#define S11 R_S11
-#define S12 R_S12
-#define S13 R_S13
-#define S14 R_S14
-#define S15 R_S15
-#define S16 R_S16
-#define S17 R_S17
-#define S18 R_S18
-#define S19 R_S19
-#define S20 R_S20
-#define S21 R_S21
-#define S22 R_S22
-#define S23 R_S23
-
-#define INPUT_MASK R_MASK
-
-/** @} */
 
 /** Abstracts buffer element */
 typedef struct hid_key_buffer
@@ -746,93 +614,10 @@ static void battery_level_meas_timeout_handler(void * p_context)
     battery_level_update();
 }
 
-
-// Setup switch pins with pullups
-static void gpio_config(void)
-{
-}
-
 static void key_scan_handler(void * p_context)
 {
     UNUSED_PARAMETER(p_context);
     keyboard_task();
-    /* uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN]; */
-    /* int i; */
-    /* int pin; */
-    /* int offset; */
-    /* uint16_t key; */
-    /* uint32_t keys; */
-
-    /* UNUSED_PARAMETER(p_context); */
-
-    /* l_keys = NRF_GPIO->IN & INPUT_MASK; */
-
-    /* if (m_conn_handle != BLE_CONN_HANDLE_INVALID) */
-    /* { */
-    /*     if (l_keys != l_keys_snapshot || r_keys != r_keys_snapshot) { */
-    /*         l_keys_snapshot = l_keys; */
-    /*         r_keys_snapshot = r_keys; */
-    /*         memset(data, 0, sizeof(data)); */
-    /*         offset = 0; */
-    /*         for (i = 0; i < 46; i++) { */
-    /*             if (i < 23) { */
-    /*                 keys = l_keys; */
-    /*             } else { */
-    /*                 keys = r_keys; */
-    /*             } */
-    /*             pin = pins[i]; */
-    /*             if (pin >= 0 && (keys & 1<<pin) == 0) { */
-    /*                 key = keymaps[_STD][i]; */
-    /*                 switch (key) { */
-    /*                     case KC_LCTRL: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= L_CONTROL_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_LSHIFT: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_LALT: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= L_ALT_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_LGUI: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= L_GUI_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_RCTRL: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= R_CONTROL_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_RSHIFT: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= R_SHIFT_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_RALT: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= R_ALT_KEY_CODE; */
-    /*                         } break; */
-    /*                     case KC_RGUI: */
-    /*                         { */
-    /*                             data[MODIFIER_KEY_POS] |= R_GUI_KEY_CODE; */
-    /*                         } break; */
-    /*                     default: */
-    /*                         { */
-    /*                             data[SCAN_CODE_POS + offset] = key; */
-    /*                             offset++; */
-    /*                             if (offset == 6) { */
-    /*                                 i = 46; */
-    /*                             } */
-    /*                         } break; */
-    /*                 } */
-    /*             } */
-    /*         } */
-    /*         ble_hids_inp_rep_send(&m_hids, */
-    /*                 INPUT_REPORT_KEYS_INDEX, */
-    /*                 INPUT_REPORT_KEYS_MAX_LEN, */
-    /*                 data); */
-    /*     } */
-    /* } */
 }
 
 /**@brief Function for the Timer initialization.
@@ -2226,8 +2011,6 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-
-    gpio_config();
 
     timers_init();
     buttons_leds_init(&erase_bonds);
