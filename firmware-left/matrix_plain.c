@@ -1,5 +1,6 @@
 #include "nrf_gpio.h"
 #include "matrix.h"
+#include "main.h"
 
 #define DEBOUNCE	5
 
@@ -54,6 +55,8 @@ static matrix_row_t read_cols(uint8_t row)
         if (nrf_gpio_pin_read((uint32_t)column_pin_array[c]))
             result |= 1 << c;
     }
+
+    result |= (uint16_t)(read_cols_right(row)) << 7;
 
     return result;
 }

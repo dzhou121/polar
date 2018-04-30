@@ -56,6 +56,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include "main.h"
 #include "nordic_common.h"
 #include "nrf.h"
 #include "nrf_assert.h"
@@ -241,48 +242,9 @@ typedef struct
 
 STATIC_ASSERT(sizeof(buffer_list_t) % 4 == 0);
 
-enum layers
-{
-	_STD,
-	_FN
-};
-
-const int pins[46] = {
-          14,     15,     10,      5,      2,
-          13,      8,      7,      4,      1,
-          19,      9,      6,      3,      0,
-                  30,     29,     28,     25,
-                  21,     22,     23,     24,
-
-           7,      4,     30,     24,     28,
-           8,      5,      2,      1,     29,
-           9,      6,      3,      0,      21,
-          16,     13,     14,     10,
-          15,     17,     18,     19,
-};
-
-/* const uint16_t keymaps[][46] = { */
-/*     [_STD] = { */
-/*         KC_Q,   KC_W,   KC_E,   KC_R,   KC_T, */
-/*         KC_A,   KC_S,   KC_D,   KC_F,   KC_G, */
-/*         KC_Z,   KC_X,   KC_C,   KC_V,   KC_B, */
-/*                 KC_W,   KC_E,   KC_Q, KC_LSHIFT, */
-/*                 KC_W,   KC_E,   KC_Q,   KC_Q, */
-
-/*         KC_Y,   KC_I,   KC_O,   KC_P,   KC_T, */
-/*         KC_H,   KC_J,   KC_K,   KC_K,   KC_G, */
-/*         KC_N,   KC_M,   KC_L,   KC_V,   KC_B, */
-/*         KC_W,   KC_E,   KC_Q, KC_LSHIFT, */
-/*         KC_W,   KC_E,   KC_Q,   KC_Q, */
-/*     }, */
-/*     [_FN] = { */
-/*         KC_Q, KC_W, KC_E, */
-/*     }, */
-/* }; */
-
 /* static uint32_t l_keys = 0; */
 /* static uint32_t l_keys_snapshot = 0; */
-static uint32_t r_keys = 0;
+static uint8_t r_keys[MATRIX_ROWS] = {0, 0, 0, 0, 0};
 /* static uint32_t r_keys_snapshot = 0; */
 
 #define MIN_CONNECTION_INTERVAL MSEC_TO_UNITS(20, UNIT_1_25_MS) /**< Determines minimum connection interval in millisecond. */
@@ -1898,10 +1860,10 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
             break;
 
         case BLE_NUS_C_EVT_NUS_RX_EVT:
-            r_keys = ((uint32_t)(p_ble_nus_evt->p_data[0]))<<24 | \
-            ((uint32_t)(p_ble_nus_evt->p_data[1])) << 16 | \
-            ((uint32_t)(p_ble_nus_evt->p_data[2])) <<  8 | \
-            ((uint32_t)(p_ble_nus_evt->p_data[3]));
+            for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+            {
+                r_keys[i] = p_ble_nus_evt->p_data[i];
+            }
             break;
 
         case BLE_NUS_C_EVT_DISCONNECTED:
@@ -1909,6 +1871,11 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
             scan_start();
             break;
     }
+}
+
+uint8_t read_cols_right(uint8_t row)
+{
+    return r_keys[row];
 }
 
 void bootloader_jump(void)
