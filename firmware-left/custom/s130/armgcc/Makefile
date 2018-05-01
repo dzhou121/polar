@@ -216,7 +216,7 @@ CFLAGS += -mfloat-abi=soft
 # keep every function in separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
-CFLAGS += -DMATRIX_COLS=14
+CFLAGS += -DMATRIX_COLS=15
 CFLAGS += -DMATRIX_ROWS=5
 CFLAGS += -DNO_PRINT
 CFLAGS += -DNO_DEBUG
@@ -235,7 +235,7 @@ ASMFLAGS += -DSWI_DISABLE0
 ASMFLAGS += -DNRF51422
 ASMFLAGS += -DBSP_UART_SUPPORT
 ASMFLAGS += -DNRF_SD_BLE_API_VERSION=2
-ASMFLAGS += -DMATRIX_COLS=14
+ASMFLAGS += -DMATRIX_COLS=15
 ASMFLAGS += -DMATRIX_ROWS=5
 ASMFLAGS += -DNO_PRINT
 ASMFLAGS += -DNO_DEBUG
