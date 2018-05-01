@@ -94,8 +94,8 @@ static uint8_t debouncing = DEBOUNCE;
 static uint8_t matrix[MATRIX_ROWS];
 static uint8_t matrix_debouncing[MATRIX_ROWS];
 
-static const uint8_t row_pin_array[MATRIX_ROWS] = {21, 22, 23, 24, 25};
-static const uint8_t column_pin_array[8] = {4, 5, 6, 7, 8, 9, 10, 11};
+static const uint8_t row_pin_array[MATRIX_ROWS] = {20, 19, 18, 17, 16};
+static const uint8_t column_pin_array[8] = {3, 4, 5, 6, 7, 8, 9, 10};
 
 
 /**@brief Function for assert macro callback.
@@ -642,7 +642,7 @@ static void key_scan_handler(void * p_context)
             matrix_debouncing[i] = cols;
             debouncing = DEBOUNCE;
         }
-        unselect_rows(i);
+        unselect_row(i);
     }
 
     if (debouncing) {
