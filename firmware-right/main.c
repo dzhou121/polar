@@ -81,79 +81,7 @@
 #define SCHED_QUEUE_SIZE                 10                                          /**< Maximum number of events in the scheduler queue. */
 #endif
 
-#define L_S01 7
-#define L_S02 4
-#define L_S03 30
-#define L_S04 24
-#define L_S05 28
-#define L_S06 8
-#define L_S07 5
-#define L_S08 2
-#define L_S09 1
-#define L_S10 29
-#define L_S11 9
-#define L_S12 6
-#define L_S13 3
-#define L_S14 0
-#define L_S15 21
-#define L_S16 16
-#define L_S17 13
-#define L_S18 14
-#define L_S19 10
-#define L_S20 15
-#define L_S21 17
-#define L_S22 18
-#define L_S23 19
-
-#define L_MASK (1<<L_S01 | \
- 				1<<L_S02 | \
-				1<<L_S03 | \
-				1<<L_S04 | \
-				1<<L_S05 | \
-				1<<L_S06 | \
-				1<<L_S07 | \
-				1<<L_S08 | \
-				1<<L_S09 | \
-				1<<L_S10 | \
-				1<<L_S11 | \
-				1<<L_S12 | \
-				1<<L_S13 | \
-				1<<L_S14 | \
-				1<<L_S15 | \
-				1<<L_S16 | \
-				1<<L_S17 | \
-				1<<L_S18 | \
-				1<<L_S19 | \
-				1<<L_S20 | \
-				1<<L_S21 | \
-				1<<L_S22 | \
-				1<<L_S23)
-
-#define S01 L_S01
-#define S02 L_S02
-#define S03 L_S03
-#define S04 L_S04
-#define S05 L_S05
-#define S06 L_S06
-#define S07 L_S07
-#define S08 L_S08
-#define S09 L_S09
-#define S10 L_S10
-#define S11 L_S11
-#define S12 L_S12
-#define S13 L_S13
-#define S14 L_S14
-#define S15 L_S15
-#define S16 L_S16
-#define S17 L_S17
-#define S18 L_S18
-#define S19 L_S19
-#define S20 L_S20
-#define S21 L_S21
-#define S22 L_S22
-#define S23 L_S23
-
-#define INPUT_MASK L_MASK
+#define DEBOUNCE	5
 
 APP_TIMER_DEF(m_key_scan_timer_id);                          /**< Battery timer. */
 
@@ -162,9 +90,12 @@ static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
 static ble_uuid_t                       m_adv_uuids[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
 
-static uint32_t r_keys = 0;
+static uint8_t debouncing = DEBOUNCE;
+static uint8_t matrix[MATRIX_ROWS];
+static uint8_t matrix_debouncing[MATRIX_ROWS];
 
-static uint32_t r_keys_snapshot = 0;
+static const uint8_t row_pin_array[MATRIX_ROWS] = {21, 22, 23, 24, 25};
+static const uint8_t column_pin_array[8] = {4, 5, 6, 7, 8, 9, 10, 11};
 
 
 /**@brief Function for assert macro callback.
@@ -667,44 +598,60 @@ static void buttons_leds_init(bool * p_erase_bonds)
 // Setup switch pins with pullups
 static void gpio_config(void)
 {
-    nrf_gpio_cfg_sense_input(S01, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S02, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S03, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S04, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S05, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S06, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S07, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S08, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S09, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S10, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S11, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S12, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S13, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S14, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S15, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S16, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S17, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S18, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S19, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S20, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S21, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S22, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
-    nrf_gpio_cfg_sense_input(S23, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+   for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+    {
+        nrf_gpio_cfg_output((uint32_t)row_pin_array[i]);
+        NRF_GPIO->PIN_CNF[(uint32_t)row_pin_array[i]] |= 0x400; //Set pin to be "Disconnected 0 and standard 1"
+        nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);         //Set pin to low
+    }
+    for (uint_fast8_t i = 0; i < 8; i++)
+    {
+        nrf_gpio_cfg_input((uint32_t)column_pin_array[i], NRF_GPIO_PIN_PULLDOWN);
+    }
+}
+
+static void select_row(uint8_t row)
+{
+    nrf_gpio_pin_set((uint32_t)row_pin_array[row]);
+}
+
+static void unselect_row(uint8_t row)
+{
+    nrf_gpio_pin_clear((uint32_t)row_pin_array[row]);
+}
+
+static uint8_t read_cols(uint8_t row)
+{
+    uint8_t result = 0;
+
+    for (uint_fast8_t c = 0; c < 8; c++)
+    {
+        if (nrf_gpio_pin_read((uint32_t)column_pin_array[c]))
+            result |= 1 << c;
+    }
+
+    return result;
 }
 
 static void key_scan_handler(void * p_context)
 {
-    uint8_t data[4];
-    r_keys = NRF_GPIO->IN & INPUT_MASK;
-    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
-    {
-        if (r_keys != r_keys_snapshot) {
-            r_keys_snapshot = r_keys;
-            data[0] = r_keys >> 24;
-            data[1] = r_keys >> 16;
-            data[2] = r_keys >>  8;
-            data[3] = r_keys;
-            ble_nus_string_send(&m_nus, data, 4);
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        select_row(i);
+        uint8_t cols = read_cols(i);
+        if (matrix_debouncing[i] != cols) {
+            matrix_debouncing[i] = cols;
+            debouncing = DEBOUNCE;
+        }
+        unselect_rows(i);
+    }
+
+    if (debouncing) {
+        if (--debouncing) {
+        } else {
+            for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+                matrix[i] = matrix_debouncing[i];
+                ble_nus_string_send(&m_nus, matrix, MATRIX_ROWS);
+            }
         }
     }
 }

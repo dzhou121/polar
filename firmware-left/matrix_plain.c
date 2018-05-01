@@ -38,12 +38,9 @@ static void select_row(uint8_t row)
     nrf_gpio_pin_set((uint32_t)row_pin_array[row]);
 }
 
-static void unselect_rows(void)
+static void unselect_row(uint8_t row)
 {
-    for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
-    {
-        nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);
-    }
+    nrf_gpio_pin_clear((uint32_t)row_pin_array[row]);
 }
 
 static matrix_row_t read_cols(uint8_t row)
@@ -70,7 +67,7 @@ uint8_t matrix_scan(void)
             matrix_debouncing[i] = cols;
             debouncing = DEBOUNCE;
         }
-        unselect_rows();
+        unselect_row(i);
     }
 
     if (debouncing) {
