@@ -29,8 +29,11 @@
 #include "ble_advdata.h"
 #include "ble_advertising.h"
 #include "ble_conn_params.h"
-#include "softdevice_handler.h"
-#include "app_timer.h"
+#include "app_scheduler.h"
+#include "softdevice_handler_appsh.h"
+#include "app_timer_appsh.h"
+/* #include "softdevice_handler.h" */
+/* #include "app_timer.h" */
 #include "app_button.h"
 #include "ble_nus.h"
 #include "app_uart.h"
@@ -90,12 +93,12 @@ static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
 static ble_uuid_t                       m_adv_uuids[] = {{BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}};  /**< Universally unique service identifier. */
 
-static uint8_t debouncing = DEBOUNCE;
+/* static uint8_t debouncing = DEBOUNCE; */
 static uint8_t matrix[MATRIX_ROWS];
-static uint8_t matrix_debouncing[MATRIX_ROWS];
+/* static uint8_t matrix_debouncing[MATRIX_ROWS]; */
 
 static const uint8_t row_pin_array[MATRIX_ROWS] = {20, 19, 18, 17, 16};
-static const uint8_t column_pin_array[MATRIX_COLS] = {3, 4, 5, 6, 7, 8, 9, 10};
+static const uint8_t column_pin_array[8] = {3, 4, 5, 6, 7, 8, 9, 10};
 
 
 /**@brief Function for assert macro callback.
@@ -157,12 +160,12 @@ static void gap_params_init(void)
 /**@snippet [Handling the data received over BLE] */
 static void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
 {
-    for (uint32_t i = 0; i < length; i++)
-    {
-        while (app_uart_put(p_data[i]) != NRF_SUCCESS);
-    }
-    while (app_uart_put('\r') != NRF_SUCCESS);
-    while (app_uart_put('\n') != NRF_SUCCESS);
+    /* for (uint32_t i = 0; i < length; i++) */
+    /* { */
+    /*     while (app_uart_put(p_data[i]) != NRF_SUCCESS); */
+    /* } */
+    /* while (app_uart_put('\r') != NRF_SUCCESS); */
+    /* while (app_uart_put('\n') != NRF_SUCCESS); */
 }
 /**@snippet [Handling the data received over BLE] */
 
@@ -410,7 +413,7 @@ static void ble_stack_init(void)
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
     // Initialize SoftDevice.
-    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
 
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
@@ -484,7 +487,7 @@ void uart_event_handle(app_uart_evt_t * p_event)
 {
     static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
     static uint8_t index = 0;
-    uint32_t       err_code;
+    /* uint32_t       err_code; */
 
     switch (p_event->evt_type)
     {
@@ -494,11 +497,11 @@ void uart_event_handle(app_uart_evt_t * p_event)
 
             if ((data_array[index - 1] == '\n') || (index >= (BLE_NUS_MAX_DATA_LEN)))
             {
-                err_code = ble_nus_string_send(&m_nus, data_array, index);
-                if (err_code != NRF_ERROR_INVALID_STATE)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
+                /* err_code = ble_nus_string_send(&m_nus, data_array, index); */
+                /* if (err_code != NRF_ERROR_INVALID_STATE) */
+                /* { */
+                /*     APP_ERROR_CHECK(err_code); */
+                /* } */
 
                 index = 0;
             }
@@ -604,27 +607,27 @@ static void gpio_config(void)
         NRF_GPIO->PIN_CNF[(uint32_t)row_pin_array[i]] |= 0x400; //Set pin to be "Disconnected 0 and standard 1"
         nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);         //Set pin to low
     }
-    for (uint_fast8_t i = 0; i < MATRIX_COLS; i++)
+    for (uint_fast8_t i = 0; i < 8; i++)
     {
         nrf_gpio_cfg_input((uint32_t)column_pin_array[i], NRF_GPIO_PIN_PULLDOWN);
     }
 }
 
-static void select_row(uint8_t row)
+void select_row(uint8_t row)
 {
     nrf_gpio_pin_set((uint32_t)row_pin_array[row]);
 }
 
-static void unselect_row(uint8_t row)
+void unselect_row(uint8_t row)
 {
     nrf_gpio_pin_clear((uint32_t)row_pin_array[row]);
 }
 
-static uint8_t read_cols(uint8_t row)
+uint8_t read_cols(uint8_t row)
 {
     uint8_t result = 0;
 
-    for (uint_fast8_t c = 0; c < MATRIX_COLS; c++)
+    for (uint_fast8_t c = 0; c < 8; c++)
     {
         if (nrf_gpio_pin_read((uint32_t)column_pin_array[c]))
             result |= 1 << c;
@@ -635,24 +638,25 @@ static uint8_t read_cols(uint8_t row)
 
 static void key_scan_handler(void * p_context)
 {
+    UNUSED_PARAMETER(p_context);
+
+    int changed = 0;
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         select_row(i);
         uint8_t cols = read_cols(i);
-        if (matrix_debouncing[i] != cols) {
-            matrix_debouncing[i] = cols;
-            debouncing = DEBOUNCE;
+        if (matrix[i] != cols) {
+            matrix[i] = cols;
+            changed = 1;
         }
         unselect_row(i);
     }
 
-    if (debouncing) {
-        if (--debouncing) {
-        } else {
-            for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
-                matrix[i] = matrix_debouncing[i];
-                ble_nus_string_send(&m_nus, matrix, MATRIX_ROWS);
-            }
+    if (changed == 1 && m_conn_handle != BLE_CONN_HANDLE_INVALID) {
+        uint8_t data[MATRIX_ROWS];
+        for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+            data[i] = matrix[i];
         }
+        ble_nus_string_send(&m_nus, data, 5);
     }
 }
 
@@ -673,9 +677,8 @@ int main(void)
     uint32_t err_code;
     bool erase_bonds;
 
-    gpio_config();
     // Initialize.
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
 
     // Create key scan timer
     err_code = app_timer_create(&m_key_scan_timer_id,
@@ -686,10 +689,12 @@ int main(void)
 
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
+    APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
     gap_params_init();
     services_init();
     advertising_init();
     conn_params_init();
+    gpio_config();
 
     printf("\r\nUART Start!\r\n");
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
@@ -700,6 +705,7 @@ int main(void)
     // Enter main loop.
     for (;;)
     {
+        app_sched_execute();
         power_manage();
     }
 }

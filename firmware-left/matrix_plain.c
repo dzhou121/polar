@@ -53,7 +53,7 @@ static matrix_row_t read_cols(uint8_t row)
             result |= 1 << c;
     }
 
-    result |= (uint16_t)(read_cols_right(row)) << 7;
+    result |= ((uint16_t)(read_cols_right(row))) << 7;
 
     return result;
 }

@@ -76,11 +76,11 @@
 #include "bsp.h"
 #include "sensorsim.h"
 #include "bsp_btn_ble.h"
-/* #include "app_scheduler.h" */
-/* #include "softdevice_handler_appsh.h" */
-#include "softdevice_handler.h"
-#include "app_timer.h"
-/* #include "app_timer_appsh.h" */
+#include "app_scheduler.h"
+#include "softdevice_handler_appsh.h"
+/* #include "softdevice_handler.h" */
+/* #include "app_timer.h" */
+#include "app_timer_appsh.h"
 #include "peer_manager.h"
 #include "app_button.h"
 #include "fds.h"
@@ -103,7 +103,7 @@
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT                       /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #endif
 
-#define CENTRAL_LINK_COUNT               1                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+#define CENTRAL_LINK_COUNT               0                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 #define PERIPHERAL_LINK_COUNT            1                                          /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define UART_TX_BUF_SIZE                 256                                        /**< UART TX buffer size. */
@@ -139,7 +139,7 @@
 /*lint -emacro(524, MIN_CONN_INTERVAL) // Loss of precision */
 #define MIN_CONN_INTERVAL                MSEC_TO_UNITS(7.5, UNIT_1_25_MS)            /**< Minimum connection interval (7.5 ms) */
 #define MAX_CONN_INTERVAL                MSEC_TO_UNITS(30, UNIT_1_25_MS)             /**< Maximum connection interval (30 ms). */
-#define SLAVE_LATENCY                    6                                           /**< Slave latency. */
+#define SLAVE_LATENCY                    0                                           /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS(430, UNIT_10_MS)              /**< Connection supervisory timeout (430 ms). */
 
 #define FIRST_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
@@ -157,7 +157,7 @@
 
 #define SCAN_INTERVAL               0x00A0                                        /**< Determines scan interval in units of 0.625 millisecond. */
 #define SCAN_WINDOW                 0x0050                                        /**< Determines scan window in units of 0.625 millisecond. */
-#define SCAN_TIMEOUT                0
+#define SCAN_TIMEOUT                0x001E  // 30 seconds
 
 
 #define OUTPUT_REPORT_INDEX              0                                           /**< Index of Output Report. */
@@ -244,7 +244,7 @@ STATIC_ASSERT(sizeof(buffer_list_t) % 4 == 0);
 
 /* static uint32_t l_keys = 0; */
 /* static uint32_t l_keys_snapshot = 0; */
-static uint8_t r_keys[MATRIX_ROWS] = {0, 0, 0, 0, 0};
+static uint8_t r_keys[5] = {0, 0, 0, 0, 0};
 /* static uint32_t r_keys_snapshot = 0; */
 
 #define MIN_CONNECTION_INTERVAL MSEC_TO_UNITS(20, UNIT_1_25_MS) /**< Determines minimum connection interval in millisecond. */
@@ -385,16 +385,16 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  */
 static void scan_start(void)
 {
-    ret_code_t err_code;
+    /* ret_code_t err_code; */
 
-    (void) sd_ble_gap_scan_stop();
+    /* (void) sd_ble_gap_scan_stop(); */
 
-    err_code = sd_ble_gap_scan_start(&m_scan_params);
-    // It is okay to ignore this error since we are stopping the scan anyway.
-    if (err_code != NRF_ERROR_INVALID_STATE)
-    {
-        APP_ERROR_CHECK(err_code);
-    }
+    /* err_code = sd_ble_gap_scan_start(&m_scan_params); */
+    /* // It is okay to ignore this error since we are stopping the scan anyway. */
+    /* if (err_code != NRF_ERROR_INVALID_STATE) */
+    /* { */
+    /*     APP_ERROR_CHECK(err_code); */
+    /* } */
 }
 
 
@@ -544,23 +544,23 @@ static void ble_advertising_error_handler(uint32_t nrf_error)
 
 /**@brief Function for performing a battery measurement, and update the Battery Level characteristic in the Battery Service.
  */
-static void battery_level_update(void)
-{
-    uint32_t err_code;
-    uint8_t  battery_level;
+/* static void battery_level_update(void) */
+/* { */
+/*     uint32_t err_code; */
+/*     uint8_t  battery_level; */
 
-    battery_level = (uint8_t)sensorsim_measure(&m_battery_sim_state, &m_battery_sim_cfg);
+/*     battery_level = (uint8_t)sensorsim_measure(&m_battery_sim_state, &m_battery_sim_cfg); */
 
-    err_code = ble_bas_battery_level_update(&m_bas, battery_level);
-    if ((err_code != NRF_SUCCESS) &&
-        (err_code != NRF_ERROR_INVALID_STATE) &&
-        (err_code != BLE_ERROR_NO_TX_PACKETS) &&
-        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-       )
-    {
-        APP_ERROR_HANDLER(err_code);
-    }
-}
+/*     err_code = ble_bas_battery_level_update(&m_bas, battery_level); */
+/*     if ((err_code != NRF_SUCCESS) && */
+/*         (err_code != NRF_ERROR_INVALID_STATE) && */
+/*         (err_code != BLE_ERROR_NO_TX_PACKETS) && */
+/*         (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING) */
+/*        ) */
+/*     { */
+/*         APP_ERROR_HANDLER(err_code); */
+/*     } */
+/* } */
 
 
 /**@brief Function for handling the Battery measurement timer timeout.
@@ -570,11 +570,11 @@ static void battery_level_update(void)
  * @param[in]   p_context   Pointer used for passing some arbitrary information (context) from the
  *                          app_start_timer() call to the timeout handler.
  */
-static void battery_level_meas_timeout_handler(void * p_context)
-{
-    UNUSED_PARAMETER(p_context);
-    battery_level_update();
-}
+/* static void battery_level_meas_timeout_handler(void * p_context) */
+/* { */
+/*     UNUSED_PARAMETER(p_context); */
+/*     battery_level_update(); */
+/* } */
 
 static void key_scan_handler(void * p_context)
 {
@@ -591,14 +591,14 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module, making it use the scheduler.
-    /* APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true); */
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+    /* APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL); */
 
     // Create battery timer.
-    err_code = app_timer_create(&m_battery_timer_id,
-                                APP_TIMER_MODE_REPEATED,
-                                battery_level_meas_timeout_handler);
-    APP_ERROR_CHECK(err_code);
+    /* err_code = app_timer_create(&m_battery_timer_id, */
+    /*                             APP_TIMER_MODE_REPEATED, */
+    /*                             battery_level_meas_timeout_handler); */
+    /* APP_ERROR_CHECK(err_code); */
 
     // Create key scan timer
     err_code = app_timer_create(&m_key_scan_timer_id,
@@ -878,8 +878,8 @@ static void timers_start(void)
 {
     uint32_t err_code;
 
-    err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL);
-    APP_ERROR_CHECK(err_code);
+/*     err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL); */
+/*     APP_ERROR_CHECK(err_code); */
 
     err_code = app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
@@ -924,58 +924,74 @@ static uint32_t send_key_scan_press_release(ble_hids_t * p_hids,
                                             uint16_t   * p_actual_len)
 {
     uint32_t err_code;
-    uint16_t offset;
-    uint16_t data_len;
-    uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN];
 
-    // HID Report Descriptor enumerates an array of size 6, the pattern hence shall not be any
-    // longer than this.
-    STATIC_ASSERT((INPUT_REPORT_KEYS_MAX_LEN - 2) == 6);
-
-    ASSERT(pattern_len <= (INPUT_REPORT_KEYS_MAX_LEN - 2));
-
-    offset   = pattern_offset;
-    data_len = pattern_len;
-
-    do
+    if (!m_in_boot_mode)
     {
-        // Reset the data buffer.
-        memset(data, 0, sizeof(data));
-
-        // Copy the scan code.
-        memcpy(data + SCAN_CODE_POS + offset, p_key_pattern + offset, data_len - offset);
-
-        if (bsp_button_is_pressed(SHIFT_BUTTON_ID))
-        {
-            data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE;
-        }
-
-        if (!m_in_boot_mode)
-        {
-            err_code = ble_hids_inp_rep_send(p_hids,
-                                             INPUT_REPORT_KEYS_INDEX,
-                                             INPUT_REPORT_KEYS_MAX_LEN,
-                                             data);
-        }
-        else
-        {
-            err_code = ble_hids_boot_kb_inp_rep_send(p_hids,
-                                                     INPUT_REPORT_KEYS_MAX_LEN,
-                                                     data);
-        }
-
-        if (err_code != NRF_SUCCESS)
-        {
-            break;
-        }
-
-        offset++;
+        err_code = ble_hids_inp_rep_send(&m_hids,
+                                         INPUT_REPORT_KEYS_INDEX,
+                                         INPUT_REPORT_KEYS_MAX_LEN,
+                                         p_key_pattern);
     }
-    while (offset <= data_len);
-
-    *p_actual_len = offset;
+    else
+    {
+        err_code = ble_hids_boot_kb_inp_rep_send(&m_hids,
+                                                 INPUT_REPORT_KEYS_MAX_LEN,
+                                                 p_key_pattern);
+    }
 
     return err_code;
+    /* uint16_t offset; */
+    /* uint16_t data_len; */
+    /* uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN]; */
+
+    /* // HID Report Descriptor enumerates an array of size 6, the pattern hence shall not be any */
+    /* // longer than this. */
+    /* STATIC_ASSERT((INPUT_REPORT_KEYS_MAX_LEN - 2) == 6); */
+
+    /* ASSERT(pattern_len <= (INPUT_REPORT_KEYS_MAX_LEN - 2)); */
+
+    /* offset   = pattern_offset; */
+    /* data_len = pattern_len; */
+
+    /* do */
+    /* { */
+    /*     // Reset the data buffer. */
+    /*     memset(data, 0, sizeof(data)); */
+
+    /*     // Copy the scan code. */
+    /*     memcpy(data + SCAN_CODE_POS + offset, p_key_pattern + offset, data_len - offset); */
+
+    /*     if (bsp_button_is_pressed(SHIFT_BUTTON_ID)) */
+    /*     { */
+    /*         data[MODIFIER_KEY_POS] |= L_SHIFT_KEY_CODE; */
+    /*     } */
+
+    /*     if (!m_in_boot_mode) */
+    /*     { */
+    /*         err_code = ble_hids_inp_rep_send(p_hids, */
+    /*                                          INPUT_REPORT_KEYS_INDEX, */
+    /*                                          INPUT_REPORT_KEYS_MAX_LEN, */
+    /*                                          data); */
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         err_code = ble_hids_boot_kb_inp_rep_send(p_hids, */
+    /*                                                  INPUT_REPORT_KEYS_MAX_LEN, */
+    /*                                                  data); */
+    /*     } */
+
+    /*     if (err_code != NRF_SUCCESS) */
+    /*     { */
+    /*         break; */
+    /*     } */
+
+    /*     offset++; */
+    /* } */
+    /* while (offset <= data_len); */
+
+    /* *p_actual_len = offset; */
+
+    /* return err_code; */
 }
 
 
@@ -1066,7 +1082,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 {
     buffer_entry_t * p_element;
     uint32_t         err_code = NRF_SUCCESS;
-    uint16_t         actual_len;
+    uint16_t         actual_len = 0;
 
     if (BUFFER_LIST_EMPTY())
     {
@@ -1122,7 +1138,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern)
 {
     uint32_t err_code;
-    uint16_t actual_len;
+    uint16_t actual_len = 0;
 
     err_code = send_key_scan_press_release(&m_hids,
                                            p_key_pattern,
@@ -1400,6 +1416,7 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
 
             if (is_uuid_present(&m_nus_uuid, p_adv_report))
             {
+                (void) sd_ble_gap_scan_stop();
                 err_code = sd_ble_gap_connect(&p_adv_report->peer_addr,
                                               &m_scan_params,
                                               &m_connection_param);
@@ -1420,7 +1437,7 @@ static void on_ble_central_evt(ble_evt_t * p_ble_evt)
             if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_SCAN)
             {
                 //NRF_LOG_DEBUG("Scan timed out.\r\n");
-                scan_start();
+                //scan_start();
             }
             else if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_CONN)
             {
@@ -1497,6 +1514,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_GAP_EVT_DISCONNECTED:
             NRF_LOG_INFO("Disconnected\r\n");
+            (void) buffer_dequeue(false);
+            m_conn_handle = BLE_CONN_HANDLE_INVALID;
             break; // BLE_GAP_EVT_DISCONNECTED
 
         case BLE_GATTC_EVT_TIMEOUT:
@@ -1588,12 +1607,12 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     // Based on the role this device plays in the connection, dispatch to the right applications.
     if (role == BLE_GAP_ROLE_PERIPH)
     {
-        bsp_btn_ble_on_ble_evt(p_ble_evt);
+        /* bsp_btn_ble_on_ble_evt(p_ble_evt); */
         on_ble_evt(p_ble_evt);
         ble_advertising_on_ble_evt(p_ble_evt);
         ble_conn_params_on_ble_evt(p_ble_evt);
         ble_hids_on_ble_evt(&m_hids, p_ble_evt);
-        ble_bas_on_ble_evt(&m_bas, p_ble_evt);
+        /* ble_bas_on_ble_evt(&m_bas, p_ble_evt); */
     }
     else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
@@ -1650,8 +1669,8 @@ static void ble_stack_init(void)
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
     // Initialize the SoftDevice handler module.
-    /* SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true); */
-    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
+    /* SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL); */
 
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
@@ -1681,10 +1700,10 @@ static void ble_stack_init(void)
 
 /**@brief Function for the Event Scheduler initialization.
  */
-/* static void scheduler_init(void) */
-/* { */
-/*     APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE); */
-/* } */
+static void scheduler_init(void)
+{
+    APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+}
 
 
 /**@brief Function for handling events from the BSP module.
@@ -1860,7 +1879,7 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
             break;
 
         case BLE_NUS_C_EVT_NUS_RX_EVT:
-            for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+            for (uint8_t i = 0; i < 5; i++)
             {
                 r_keys[i] = p_ble_nus_evt->p_data[i];
             }
@@ -1868,7 +1887,7 @@ static void ble_nus_c_evt_handler(ble_nus_c_t * p_ble_nus_c, const ble_nus_c_evt
 
         case BLE_NUS_C_EVT_DISCONNECTED:
             printf("Disconnected\r\n");
-            scan_start();
+            //scan_start();
             break;
     }
 }
@@ -1889,19 +1908,7 @@ uint8_t keyboard_leds()
 
 void send_keyboard(report_keyboard_t * report)
 {
-    if (!m_in_boot_mode)
-    {
-        ble_hids_inp_rep_send(&m_hids,
-                INPUT_REPORT_KEYS_INDEX,
-                INPUT_REPORT_KEYS_MAX_LEN,
-                report->raw);
-    }
-    else
-    {
-        ble_hids_boot_kb_inp_rep_send(&m_hids,
-                INPUT_REPORT_KEYS_MAX_LEN,
-                report->raw);
-    }
+    keys_send(KEYBOARD_REPORT_SIZE, report->raw);
 }
 
 void send_mouse(report_mouse_t * report)
@@ -1984,7 +1991,8 @@ int main(void)
     db_discovery_init();
     ble_stack_init();
     nus_c_init();
-    /* scheduler_init(); */
+    scheduler_init();
+    keyboard_init();
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)
     {
@@ -1996,7 +2004,6 @@ int main(void)
     sensor_simulator_init();
     conn_params_init();
     buffer_init();
-    keyboard_init();
     host_set_driver(&driver);
 
     // Start execution.
@@ -2008,7 +2015,7 @@ int main(void)
     // Enter main loop.
     for (;;)
     {
-        /* app_sched_execute(); */
+        app_sched_execute();
         if (NRF_LOG_PROCESS() == false)
         {
             power_manage();
