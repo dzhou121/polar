@@ -151,11 +151,9 @@
 #endif //PERIPHERAL_RESOURCE_SHARING_ENABLED
 // </e>
 
-
 #ifndef APP_FIFO_ENABLED
 #define APP_FIFO_ENABLED 1
 #endif
-
 
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================

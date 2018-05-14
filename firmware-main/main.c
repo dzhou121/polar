@@ -71,12 +71,12 @@
 #define PERIPHERAL_LINK_COUNT            1                                          /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define UART_TX_BUF_SIZE                 256                                        /**< UART TX buffer size. */
-#define UART_RX_BUF_SIZE                 1                                          /**< UART RX buffer size. */
+#define UART_RX_BUF_SIZE                 256                                          /**< UART RX buffer size. */
 
 #define KEY_PRESS_BUTTON_ID              0                                          /**< Button used as Keyboard key press. */
 #define SHIFT_BUTTON_ID                  1                                          /**< Button used as 'SHIFT' Key. */
 
-#define DEVICE_NAME                      "Nordic_Keyboard"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                      "Polar Keyboard"                          /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
@@ -92,7 +92,7 @@
 #define PNP_ID_PRODUCT_ID                0xEEEE                                     /**< Product ID. */
 #define PNP_ID_PRODUCT_VERSION           0x0001                                     /**< Product Version. */
 
-#define APP_ADV_FAST_INTERVAL            0x0028                                     /**< Fast advertising interval (in units of 0.625 ms. This value corresponds to 25 ms.). */
+#define APP_ADV_FAST_INTERVAL            40                                     /**< Fast advertising interval (in units of 0.625 ms. This value corresponds to 25 ms.). */
 #define APP_ADV_SLOW_INTERVAL            0x0C80                                     /**< Slow advertising interval (in units of 0.625 ms. This value corrsponds to 2 seconds). */
 #define APP_ADV_FAST_TIMEOUT             30                                         /**< The duration of the fast advertising period (in seconds). */
 #define APP_ADV_SLOW_TIMEOUT             180                                        /**< The duration of the slow advertising period (in seconds). */
@@ -219,49 +219,15 @@ static sensorsim_state_t m_battery_sim_state;               /**< Battery Level s
 APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. */
 
 static pm_peer_id_t m_peer_id;                              /**< Device reference handle to the current bonded central. */
-static bool         m_caps_on = false;                      /**< Variable to indicate if Caps Lock is turned on. */
-
-static pm_peer_id_t   m_whitelist_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];  /**< List of peers currently in the whitelist. */
-static uint32_t       m_whitelist_peer_cnt;                                 /**< Number of peers currently in the whitelist. */
-static bool           m_is_wl_changed;                                      /**< Indicates if the whitelist has been changed since last time it has been updated in the Peer Manager. */
 
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
-
-static uint8_t m_sample_key_press_scan_str[] = /**< Key pattern to be sent when the key press button has been pushed. */
-{
-    0x0b,                                      /* Key h */
-    0x08,                                      /* Key e */
-    0x0f,                                      /* Key l */
-    0x0f,                                      /* Key l */
-    0x12,                                      /* Key o */
-    0x28                                       /* Key Return */
-};
-
-static uint8_t m_caps_on_key_scan_str[] = /**< Key pattern to be sent when the output report has been written with the CAPS LOCK bit set. */
-{
-    0x06,                                 /* Key C */
-    0x04,                                 /* Key a */
-    0x13,                                 /* Key p */
-    0x16,                                 /* Key s */
-    0x12,                                 /* Key o */
-    0x11,                                 /* Key n */
-};
-
-static uint8_t m_caps_off_key_scan_str[] = /**< Key pattern to be sent when the output report has been written with the CAPS LOCK bit cleared. */
-{
-    0x06,                                  /* Key C */
-    0x04,                                  /* Key a */
-    0x13,                                  /* Key p */
-    0x16,                                  /* Key s */
-    0x12,                                  /* Key o */
-    0x09,                                  /* Key f */
-};
-
 
 /** List to enqueue not just data to be sent, but also related information like the handle, connection handle etc */
 static buffer_list_t buffer_list;
 
 static void on_hids_evt(ble_hids_t * p_hids, ble_hids_evt_t * p_evt);
+
+static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern);
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -280,54 +246,11 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 }
 
 
-/**@brief Fetch the list of peer manager peer IDs.
- *
- * @param[inout] p_peers   The buffer where to store the list of peer IDs.
- * @param[inout] p_size    In: The size of the @p p_peers buffer.
- *                         Out: The number of peers copied in the buffer.
- */
-static void peer_list_get(pm_peer_id_t * p_peers, uint32_t * p_size)
-{
-    pm_peer_id_t peer_id;
-    uint32_t     peers_to_copy;
-
-    peers_to_copy = (*p_size < BLE_GAP_WHITELIST_ADDR_MAX_COUNT) ?
-                     *p_size : BLE_GAP_WHITELIST_ADDR_MAX_COUNT;
-
-    peer_id = pm_next_peer_id_get(PM_PEER_ID_INVALID);
-    *p_size = 0;
-
-    while ((peer_id != PM_PEER_ID_INVALID) && (peers_to_copy--))
-    {
-        p_peers[(*p_size)++] = peer_id;
-        peer_id = pm_next_peer_id_get(peer_id);
-    }
-}
-
-
 /**@brief Function for starting advertising.
  */
 static void advertising_start(void)
 {
     ret_code_t ret;
-
-    memset(m_whitelist_peers, PM_PEER_ID_INVALID, sizeof(m_whitelist_peers));
-    m_whitelist_peer_cnt = (sizeof(m_whitelist_peers) / sizeof(pm_peer_id_t));
-
-    peer_list_get(m_whitelist_peers, &m_whitelist_peer_cnt);
-
-    ret = pm_whitelist_set(m_whitelist_peers, m_whitelist_peer_cnt);
-    APP_ERROR_CHECK(ret);
-
-    // Setup the device identies list.
-    // Some SoftDevices do not support this feature.
-    ret = pm_device_identities_list_set(m_whitelist_peers, m_whitelist_peer_cnt);
-    if (ret != NRF_ERROR_NOT_SUPPORTED)
-    {
-        APP_ERROR_CHECK(ret);
-    }
-
-    m_is_wl_changed = false;
 
     ret = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(ret);
@@ -358,21 +281,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 
             m_peer_id = p_evt->peer_id;
 
-            // Note: You should check on what kind of white list policy your application should use.
-            if (p_evt->params.conn_sec_succeeded.procedure == PM_LINK_SECURED_PROCEDURE_BONDING)
-            {
-                NRF_LOG_INFO("New Bond, add the peer to the whitelist if possible\r\n");
-                NRF_LOG_INFO("\tm_whitelist_peer_cnt %d, MAX_PEERS_WLIST %d\r\n",
-                               m_whitelist_peer_cnt + 1,
-                               BLE_GAP_WHITELIST_ADDR_MAX_COUNT);
-
-                if (m_whitelist_peer_cnt < BLE_GAP_WHITELIST_ADDR_MAX_COUNT)
-                {
-                    // Bonded to a new peer, add it to the whitelist.
-                    m_whitelist_peers[m_whitelist_peer_cnt++] = m_peer_id;
-                    m_is_wl_changed = true;
-                }
-            }
         } break;
 
         case PM_EVT_CONN_SEC_FAILED:
@@ -843,56 +751,20 @@ static uint32_t send_key_scan_press_release(ble_hids_t * p_hids,
                                             uint16_t   * p_actual_len)
 {
     uint32_t err_code;
-    uint16_t offset;
-    uint16_t data_len;
-    uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN];
 
-    // HID Report Descriptor enumerates an array of size 6, the pattern hence shall not be any
-    // longer than this.
-    STATIC_ASSERT((INPUT_REPORT_KEYS_MAX_LEN - 2) == 6);
-
-    ASSERT(pattern_len <= (INPUT_REPORT_KEYS_MAX_LEN - 2));
-
-    offset   = pattern_offset;
-    data_len = pattern_len;
-
-    do
+    if (!m_in_boot_mode)
     {
-        // Reset the data buffer.
-        memset(data, 0, sizeof(data));
-
-        // Copy the scan code.
-        memcpy(data + SCAN_CODE_POS + offset, p_key_pattern + offset, data_len - offset);
-
-        if (bsp_button_is_pressed(SHIFT_BUTTON_ID))
-        {
-            data[MODIFIER_KEY_POS] |= SHIFT_KEY_CODE;
-        }
-
-        if (!m_in_boot_mode)
-        {
-            err_code = ble_hids_inp_rep_send(p_hids,
-                                             INPUT_REPORT_KEYS_INDEX,
-                                             INPUT_REPORT_KEYS_MAX_LEN,
-                                             data);
-        }
-        else
-        {
-            err_code = ble_hids_boot_kb_inp_rep_send(p_hids,
-                                                     INPUT_REPORT_KEYS_MAX_LEN,
-                                                     data);
-        }
-
-        if (err_code != NRF_SUCCESS)
-        {
-            break;
-        }
-
-        offset++;
+        err_code = ble_hids_inp_rep_send(&m_hids,
+                                         INPUT_REPORT_KEYS_INDEX,
+                                         INPUT_REPORT_KEYS_MAX_LEN,
+                                         p_key_pattern);
     }
-    while (offset <= data_len);
-
-    *p_actual_len = offset;
+    else
+    {
+        err_code = ble_hids_boot_kb_inp_rep_send(&m_hids,
+                                                 INPUT_REPORT_KEYS_MAX_LEN,
+                                                 p_key_pattern);
+    }
 
     return err_code;
 }
@@ -985,7 +857,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 {
     buffer_entry_t * p_element;
     uint32_t         err_code = NRF_SUCCESS;
-    uint16_t         actual_len;
+    uint16_t         actual_len = 0;
 
     if (BUFFER_LIST_EMPTY())
     {
@@ -1041,7 +913,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern)
 {
     uint32_t err_code;
-    uint16_t actual_len;
+    uint16_t actual_len = 0;
 
     err_code = send_key_scan_press_release(&m_hids,
                                            p_key_pattern,
@@ -1079,47 +951,10 @@ static void on_hid_rep_char_write(ble_hids_evt_t * p_evt)
 {
     if (p_evt->params.char_write.char_id.rep_type == BLE_HIDS_REP_TYPE_OUTPUT)
     {
-        uint32_t err_code;
-        uint8_t  report_val;
         uint8_t  report_index = p_evt->params.char_write.char_id.rep_index;
 
         if (report_index == OUTPUT_REPORT_INDEX)
         {
-            // This code assumes that the outptu report is one byte long. Hence the following
-            // static assert is made.
-            STATIC_ASSERT(OUTPUT_REPORT_MAX_LEN == 1);
-
-            err_code = ble_hids_outp_rep_get(&m_hids,
-                                             report_index,
-                                             OUTPUT_REPORT_MAX_LEN,
-                                             0,
-                                             &report_val);
-            APP_ERROR_CHECK(err_code);
-
-            if (!m_caps_on && ((report_val & OUTPUT_REPORT_BIT_MASK_CAPS_LOCK) != 0))
-            {
-                // Caps Lock is turned On.
-                NRF_LOG_INFO("Caps Lock is turned On!\r\n");
-                err_code = bsp_indication_set(BSP_INDICATE_ALERT_3);
-                APP_ERROR_CHECK(err_code);
-
-                keys_send(sizeof(m_caps_on_key_scan_str), m_caps_on_key_scan_str);
-                m_caps_on = true;
-            }
-            else if (m_caps_on && ((report_val & OUTPUT_REPORT_BIT_MASK_CAPS_LOCK) == 0))
-            {
-                // Caps Lock is turned Off .
-                NRF_LOG_INFO("Caps Lock is turned Off!\r\n");
-                err_code = bsp_indication_set(BSP_INDICATE_ALERT_OFF);
-                APP_ERROR_CHECK(err_code);
-
-                keys_send(sizeof(m_caps_off_key_scan_str), m_caps_off_key_scan_str);
-                m_caps_on = false;
-            }
-            else
-            {
-                // The report received is not supported by this application. Do nothing.
-            }
         }
     }
 }
@@ -1131,13 +966,7 @@ static void on_hid_rep_char_write(ble_hids_evt_t * p_evt)
  */
 static void sleep_mode_enter(void)
 {
-    uint32_t err_code = bsp_indication_set(BSP_INDICATE_IDLE);
-
-    APP_ERROR_CHECK(err_code);
-
-    // Prepare wakeup buttons.
-    err_code = bsp_btn_ble_sleep_mode_prepare();
-    APP_ERROR_CHECK(err_code);
+    uint32_t err_code;
 
     // Go to system-off mode (this function will not return; wakeup will cause a reset).
     err_code = sd_power_system_off();
@@ -1192,32 +1021,22 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     {
         case BLE_ADV_EVT_DIRECTED:
             NRF_LOG_INFO("BLE_ADV_EVT_DIRECTED\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_DIRECTED);
-            APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_DIRECTED
 
         case BLE_ADV_EVT_FAST:
             NRF_LOG_INFO("BLE_ADV_EVT_FAST\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
-            APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_FAST
 
         case BLE_ADV_EVT_SLOW:
             NRF_LOG_INFO("BLE_ADV_EVT_SLOW\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_SLOW);
-            APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_SLOW
 
         case BLE_ADV_EVT_FAST_WHITELIST:
             NRF_LOG_INFO("BLE_ADV_EVT_FAST_WHITELIST\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_WHITELIST);
-            APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_FAST_WHITELIST
 
         case BLE_ADV_EVT_SLOW_WHITELIST:
             NRF_LOG_INFO("BLE_ADV_EVT_SLOW_WHITELIST\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING_WHITELIST);
-            APP_ERROR_CHECK(err_code);
             break; //BLE_ADV_EVT_SLOW_WHITELIST
 
         case BLE_ADV_EVT_IDLE:
@@ -1281,8 +1100,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     {
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected\r\n");
-            err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
-            APP_ERROR_CHECK(err_code);
 
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             break; // BLE_GAP_EVT_CONNECTED
@@ -1299,27 +1116,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
-            // Reset m_caps_on variable. Upon reconnect, the HID host will re-send the Output
-            // report containing the Caps lock state.
-            m_caps_on = false;
-            // disabling alert 3. signal - used for capslock ON
-            err_code = bsp_indication_set(BSP_INDICATE_ALERT_OFF);
-            APP_ERROR_CHECK(err_code);
-
-            if (m_is_wl_changed)
-            {
-                // The whitelist has been modified, update it in the Peer Manager.
-                err_code = pm_whitelist_set(m_whitelist_peers, m_whitelist_peer_cnt);
-                APP_ERROR_CHECK(err_code);
-
-                err_code = pm_device_identities_list_set(m_whitelist_peers, m_whitelist_peer_cnt);
-                if (err_code != NRF_ERROR_NOT_SUPPORTED)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
-
-                m_is_wl_changed = false;
-            }
             break; // BLE_GAP_EVT_DISCONNECTED
 
         case BLE_GATTC_EVT_TIMEOUT:
@@ -1400,7 +1196,6 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
      * Remember to call ble_conn_state_on_ble_evt before calling any ble_conns_state_* functions. */
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
-    bsp_btn_ble_on_ble_evt(p_ble_evt);
     on_ble_evt(p_ble_evt);
     ble_advertising_on_ble_evt(p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
@@ -1476,62 +1271,6 @@ static void scheduler_init(void)
 }
 
 
-/**@brief Function for handling events from the BSP module.
- *
- * @param[in]   event   Event generated by button press.
- */
-static void bsp_event_handler(bsp_event_t event)
-{
-    uint32_t         err_code;
-    static uint8_t * p_key = m_sample_key_press_scan_str;
-    static uint8_t   size  = 0;
-
-    switch (event)
-    {
-        case BSP_EVENT_SLEEP:
-            sleep_mode_enter();
-            break;
-
-        case BSP_EVENT_DISCONNECT:
-            err_code = sd_ble_gap_disconnect(m_conn_handle,
-                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-            if (err_code != NRF_ERROR_INVALID_STATE)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            break;
-
-        case BSP_EVENT_WHITELIST_OFF:
-            if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
-            {
-                err_code = ble_advertising_restart_without_whitelist();
-                if (err_code != NRF_ERROR_INVALID_STATE)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
-            }
-            break;
-
-        case BSP_EVENT_KEY_0:
-            if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
-            {
-                keys_send(1, p_key);
-                p_key++;
-                size++;
-                if (size == MAX_KEYS_IN_ONE_REPORT)
-                {
-                    p_key = m_sample_key_press_scan_str;
-                    size  = 0;
-                }
-            }
-            break;
-
-        default:
-            break;
-    }
-}
-
-
 /**@brief Function for the Peer Manager initialization.
  *
  * @param[in] erase_bonds  Indicates whether bonding information should be cleared from
@@ -1595,7 +1334,7 @@ static void advertising_init(void)
     advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
     memset(&options, 0, sizeof(options));
-    options.ble_adv_whitelist_enabled      = true;
+    options.ble_adv_whitelist_enabled      = false;
     options.ble_adv_directed_enabled       = true;
     options.ble_adv_directed_slow_enabled  = false;
     options.ble_adv_directed_slow_interval = 0;
@@ -1615,28 +1354,6 @@ static void advertising_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-
-/**@brief Function for initializing buttons and leds.
- *
- * @param[out] p_erase_bonds  Will be true if the clear bonding button was pressed to wake the application up.
- */
-static void buttons_leds_init(bool * p_erase_bonds)
-{
-    bsp_event_t startup_event;
-
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS,
-                                 APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
-                                 bsp_event_handler);
-
-    APP_ERROR_CHECK(err_code);
-
-    err_code = bsp_btn_ble_init(NULL, &startup_event);
-    APP_ERROR_CHECK(err_code);
-
-    *p_erase_bonds = (startup_event == BSP_EVENT_CLEAR_BONDING_DATA);
-}
-
-
 void uart_event_handle(app_uart_evt_t * p_event)
 {
     static uint8_t data_array[8];
@@ -1650,6 +1367,7 @@ void uart_event_handle(app_uart_evt_t * p_event)
 
             if (index >= 8)
             {
+                keys_send(8, data_array);
                 index = 0;
             }
             break;
@@ -1706,7 +1424,7 @@ static void power_manage(void)
  */
 int main(void)
 {
-    bool     erase_bonds;
+    bool     erase_bonds = false;
     uint32_t err_code;
 
     // Initialize.
@@ -1715,7 +1433,6 @@ int main(void)
 
     timers_init();
     uart_init();
-    buttons_leds_init(&erase_bonds);
     ble_stack_init();
     scheduler_init();
     peer_manager_init(erase_bonds);
