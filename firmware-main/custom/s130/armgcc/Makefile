@@ -18,6 +18,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer_appsh.c \
+  $(SDK_ROOT)/components/libraries/fifo/app_fifo.c \
+  $(SDK_ROOT)/components/libraries/uart/app_uart_fifo.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/components/libraries/crc16/crc16.c \
   $(SDK_ROOT)/components/libraries/fds/fds.c \
@@ -129,9 +131,10 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/low_power_pwm \
   $(SDK_ROOT)/components/libraries/hardfault \
   $(SDK_ROOT)/components/ble/ble_services/ble_cscs \
-  $(SDK_ROOT)/components/libraries/uart \
   $(SDK_ROOT)/components/libraries/hci \
   $(SDK_ROOT)/components/libraries/usbd/class/hid/kbd \
+  $(SDK_ROOT)/components/libraries/uart \
+  $(SDK_ROOT)/components/libraries/fifo \
   $(SDK_ROOT)/components/drivers_nrf/spi_slave \
   $(SDK_ROOT)/components/drivers_nrf/lpcomp \
   $(SDK_ROOT)/components/libraries/timer \

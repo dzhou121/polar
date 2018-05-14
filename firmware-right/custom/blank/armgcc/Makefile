@@ -2,7 +2,7 @@ PROJECT_NAME     := gzll_ack_payload_device_pca10028
 TARGETS          := nrf51422_xxac
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../../../../../..
+SDK_ROOT := ../../../../../..
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf51422_xxac.out: \
@@ -76,6 +76,10 @@ CFLAGS += -mfloat-abi=soft
 # keep every function in separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
+CFLAGS += -DMATRIX_COLS=8
+CFLAGS += -DMATRIX_ROWS=5
+CFLAGS += -DNO_PRINT
+CFLAGS += -DNO_DEBUG
 
 # C++ flags common to all targets
 CXXFLAGS += \
@@ -89,6 +93,10 @@ ASMFLAGS += -DUSE_SD_HW_RESOURCES
 ASMFLAGS += -DGAZELL_ALTERNATIVE_RESOURCES
 ASMFLAGS += -DSWI_DISABLE0
 ASMFLAGS += -DNRF51422
+ASMFLAGS += -DMATRIX_COLS=8
+ASMFLAGS += -DMATRIX_ROWS=5
+ASMFLAGS += -DNO_PRINT
+ASMFLAGS += -DNO_DEBUG
 
 # Linker flags
 LDFLAGS += -mthumb -mabi=aapcs -L $(TEMPLATE_PATH) -T$(LINKER_SCRIPT)

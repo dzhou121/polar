@@ -1,6 +1,6 @@
 #!/bin/bash
 echo '=============================== MAKING ================================'
-cd custom/s130/armgcc
+cd custom/blank/armgcc
 make
 if [[ $? -ne 0 ]] ; then
     exit 0
@@ -18,7 +18,7 @@ echo '============================= PROGRAMMING ============================='
 	sleep 1;
 	echo "flash write_image erase /Users/Lulu/nRF5_SDK_12/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex";
 	sleep 29;
-	echo "flash write_image /Users/Lulu/nRF5_SDK_12/examples/polar/firmware-right/custom/s130/armgcc/_build/nrf51422_xxac.hex";
+	echo "flash write_image /Users/Lulu/nRF5_SDK_12/examples/polar/firmware-right/custom/blank/armgcc/_build/nrf51422_xxac.hex";
 	sleep 10;
 	echo "reset";
 	sleep 0.1;
