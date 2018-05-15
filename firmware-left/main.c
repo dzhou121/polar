@@ -77,48 +77,6 @@ host_driver_t driver = {
 };
 
 
-/**
- * @brief Function to read the button state.
- *
- * @return Returns states of the buttons.
- */
-static uint8_t input_get(void)
-{
-    uint8_t result = 0;
-    for (uint32_t i = 0; i < BUTTONS_NUMBER; i++)
-    {
-        if (bsp_button_is_pressed(i))
-        {
-            result |= (1 << i);
-        }
-    }
-
-    return ~(result);
-}
-
-
-/**
- * @brief Function to control the LED outputs.
- *
- * @param[in] val Desirable state of the LEDs.
- */
-static void output_present(uint8_t val)
-{
-    uint32_t i;
-
-    for (i = 0; i < LEDS_NUMBER; i++)
-    {
-        if (val & (1 << i))
-        {
-            bsp_board_led_on(i);
-        }
-        else
-        {
-            bsp_board_led_off(i);
-        }
-    }
-}
-
 /*****************************************************************************/
 /** @name Gazell callback function definitions.  */
 /*****************************************************************************/
@@ -132,30 +90,12 @@ void nrf_gzll_host_rx_data_ready(uint32_t pipe, nrf_gzll_host_rx_info_t rx_info)
     uint32_t data_payload_length = NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH;
 
     // Pop packet and write first byte of the payload to the GPIO port.
-    bool result_value = nrf_gzll_fetch_packet_from_rx_fifo(pipe,
-                                                           m_data_payload,
-                                                           &data_payload_length);
-
-    if (!result_value)
-    {
-        NRF_LOG_ERROR("RX fifo error \r\n");
-        NRF_LOG_FLUSH();
-    }
-
-    if (data_payload_length > 0)
-    {
-        output_present(m_data_payload[0]);
-    }
+    nrf_gzll_fetch_packet_from_rx_fifo(pipe, m_data_payload, &data_payload_length);
 
     // Read buttons and load ACK payload into TX queue.
-    m_ack_payload[0] = input_get(); // Button logic is inverted.
+    m_ack_payload[0] = 0x55; // Button logic is inverted.
 
-    result_value = nrf_gzll_add_packet_to_tx_fifo(pipe, m_ack_payload, TX_PAYLOAD_LENGTH);
-    if (!result_value)
-    {
-        NRF_LOG_ERROR("TX fifo error \r\n");
-        NRF_LOG_FLUSH();
-    }
+    nrf_gzll_add_packet_to_tx_fifo(pipe, m_ack_payload, TX_PAYLOAD_LENGTH);
 }
 
 
@@ -272,16 +212,6 @@ static void uart_init(void)
 }
 
 
-/**@brief Function for the Power manager.
- */
-/* static void power_manage(void) */
-/* { */
-/*     uint32_t err_code = sd_app_evt_wait(); */
-
-/*     APP_ERROR_CHECK(err_code); */
-/* } */
-
-
 /*****************************************************************************/
 /**
  * @brief Main function.
@@ -293,22 +223,19 @@ int main()
     uart_init();
 
     // Initialize Gazell.
-    /* bool result_value = nrf_gzll_init(NRF_GZLL_MODE_HOST); */
-    /* GAZELLE_ERROR_CODE_CHECK(result_value); */
+    bool result_value = nrf_gzll_init(NRF_GZLL_MODE_HOST);
+    GAZELLE_ERROR_CODE_CHECK(result_value);
 
-    /* // Load data into TX queue. */
-    /* m_ack_payload[0] = input_get(); */
+    nrf_gzll_set_base_address_0(0x01020304);
 
-    /* result_value = nrf_gzll_add_packet_to_tx_fifo(PIPE_NUMBER, m_data_payload, TX_PAYLOAD_LENGTH); */
-    /* if (!result_value) */
-    /* { */
-    /*     NRF_LOG_ERROR("TX fifo error \r\n"); */
-    /*     NRF_LOG_FLUSH(); */
-    /* } */
+    // Load data into TX queue.
+    m_ack_payload[0] = 0x55;
 
-    /* // Enable Gazell to start sending over the air. */
-    /* result_value = nrf_gzll_enable(); */
-    /* GAZELLE_ERROR_CODE_CHECK(result_value); */
+    nrf_gzll_add_packet_to_tx_fifo(PIPE_NUMBER, m_data_payload, TX_PAYLOAD_LENGTH);
+
+    // Enable Gazell to start sending over the air.
+    result_value = nrf_gzll_enable();
+    GAZELLE_ERROR_CODE_CHECK(result_value);
 
     keyboard_init();
     host_set_driver(&driver);

@@ -269,6 +269,8 @@ int main()
 
     while (1)
     {
+        __SEV();
+        __WFE();
         __WFE();
     }
 }
