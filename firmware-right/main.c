@@ -24,8 +24,9 @@
  * the ACK are output on GPIO Port LEDS.
  */
 
+#include "nrf_gpio.h"
 #include "nrf_gzll.h"
-#include "bsp.h"
+#include "nrf_drv_clock.h"
 #include "app_timer.h"
 #include "app_error.h"
 #include "nrf_gzll_error.h"
@@ -39,7 +40,7 @@
 /*****************************************************************************/
 #define PIPE_NUMBER             0   /**< Pipe 0 is used in this example. */
 
-#define TX_PAYLOAD_LENGTH       1   /**< 1-byte payload length is used when transmitting. */
+#define TX_PAYLOAD_LENGTH       5   /**< 1-byte payload length is used when transmitting. */
 #define MAX_TX_ATTEMPTS         100 /**< Maximum number of transmission attempts */
 
 #define APP_TIMER_PRESCALER     0   /**< Value of the RTC PRESCALER register. */
@@ -50,74 +51,11 @@
 APP_TIMER_DEF(m_key_scan_timer_id);
 
 
-static uint8_t m_data_payload[TX_PAYLOAD_LENGTH];                /**< Payload to send to Host. */
 static uint8_t m_ack_payload[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH]; /**< Placeholder for received ACK payloads from Host. */
 
-
-/**
- * @brief Function to read the button states.
- *
- * @return Returns states of buttons.
- */
-static uint8_t input_get(void)
-{
-    uint8_t result = 0;
-    for (uint32_t i = 0; i < BUTTONS_NUMBER; i++)
-    {
-        if (bsp_button_is_pressed(i))
-        {
-            result |= (1 << i);
-        }
-    }
-
-    return ~(result);
-}
-
-
-/**
- * @brief Function to control the LED outputs.
- *
- * @param[in] val Desirable state of the LEDs.
- */
-static void output_present(uint8_t val)
-{
-    uint32_t i;
-
-    for (i = 0; i < LEDS_NUMBER; i++)
-    {
-        if (val & (1 << i))
-        {
-            bsp_board_led_on(i);
-        }
-        else
-        {
-            bsp_board_led_off(i);
-        }
-    }
-}
-
-
-/**
- * @brief Initialize the BSP modules.
- */
-static void ui_init(void)
-{
-
-    // BSP initialization.
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS,
-                                 APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
-                                 NULL);
-    APP_ERROR_CHECK(err_code);
-
-    // Set up logger
-    err_code = NRF_LOG_INIT(NULL);
-    APP_ERROR_CHECK(err_code);
-
-    NRF_LOG_INFO("Gazell ACK payload example. Device mode.\r\n");
-    NRF_LOG_FLUSH();
-
-    bsp_board_leds_init();
-}
+static uint8_t matrix[MATRIX_ROWS];
+static const uint8_t row_pin_array[MATRIX_ROWS] = {20, 19, 18, 17, 16};
+static const uint8_t column_pin_array[8] = {3, 4, 5, 6, 7, 8, 9, 10};
 
 
 /*****************************************************************************/
@@ -130,34 +68,12 @@ static void ui_init(void)
  */
 void  nrf_gzll_device_tx_success(uint32_t pipe, nrf_gzll_device_tx_info_t tx_info)
 {
-    bool     result_value         = false;
     uint32_t m_ack_payload_length = NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH;
 
     if (tx_info.payload_received_in_ack)
     {
         // Pop packet and write first byte of the payload to the GPIO port.
-        result_value =
-            nrf_gzll_fetch_packet_from_rx_fifo(pipe, m_ack_payload, &m_ack_payload_length);
-        if (!result_value)
-        {
-            NRF_LOG_ERROR("RX fifo error \r\n");
-            NRF_LOG_FLUSH();
-        }
-
-        if (m_ack_payload_length > 0)
-        {
-            output_present(m_ack_payload[0]);
-        }
-    }
-
-    // Load data payload into the TX queue.
-    m_data_payload[0] = input_get();
-
-    result_value = nrf_gzll_add_packet_to_tx_fifo(pipe, m_data_payload, TX_PAYLOAD_LENGTH);
-    if (!result_value)
-    {
-        NRF_LOG_ERROR("TX fifo error \r\n");
-        NRF_LOG_FLUSH();
+        nrf_gzll_fetch_packet_from_rx_fifo(pipe, m_ack_payload, &m_ack_payload_length);
     }
 }
 
@@ -172,18 +88,6 @@ void  nrf_gzll_device_tx_success(uint32_t pipe, nrf_gzll_device_tx_info_t tx_inf
  */
 void nrf_gzll_device_tx_failed(uint32_t pipe, nrf_gzll_device_tx_info_t tx_info)
 {
-    NRF_LOG_ERROR("Gazell transmission failed\r\n");
-    NRF_LOG_FLUSH();
-
-    // Load data into TX queue.
-    m_data_payload[0] = input_get();
-
-    bool result_value = nrf_gzll_add_packet_to_tx_fifo(pipe, m_data_payload, TX_PAYLOAD_LENGTH);
-    if (!result_value)
-    {
-        NRF_LOG_ERROR("TX fifo error \r\n");
-        NRF_LOG_FLUSH();
-    }
 }
 
 
@@ -204,6 +108,45 @@ void nrf_gzll_disabled()
 {
 }
 
+// Setup switch pins with pullups
+static void gpio_config(void)
+{
+   for (uint_fast8_t i = 0; i < MATRIX_ROWS; i++)
+    {
+        nrf_gpio_cfg_output((uint32_t)row_pin_array[i]);
+        NRF_GPIO->PIN_CNF[(uint32_t)row_pin_array[i]] |= 0x400; //Set pin to be "Disconnected 0 and standard 1"
+        nrf_gpio_pin_clear((uint32_t)row_pin_array[i]);         //Set pin to low
+    }
+    for (uint_fast8_t i = 0; i < 8; i++)
+    {
+        nrf_gpio_cfg_input((uint32_t)column_pin_array[i], NRF_GPIO_PIN_PULLDOWN);
+    }
+}
+
+void select_row(uint8_t row)
+{
+    nrf_gpio_pin_set((uint32_t)row_pin_array[row]);
+}
+
+void unselect_row(uint8_t row)
+{
+    nrf_gpio_pin_clear((uint32_t)row_pin_array[row]);
+}
+
+uint8_t read_cols(uint8_t row)
+{
+    uint8_t result = 0;
+
+    for (uint_fast8_t c = 0; c < 8; c++)
+    {
+        if (nrf_gpio_pin_read((uint32_t)column_pin_array[c]))
+            result |= 1 << c;
+    }
+
+    return result;
+}
+
+
 static void key_scan_handler(void * p_context)
 {
     UNUSED_PARAMETER(p_context);
@@ -219,11 +162,8 @@ static void key_scan_handler(void * p_context)
         unselect_row(i);
     }
 
-    if (changed == 1 && m_conn_handle != BLE_CONN_HANDLE_INVALID) {
-        uint8_t data[MATRIX_ROWS];
-        for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
-            data[i] = matrix[i];
-        }
+    if (changed == 1) {
+        nrf_gzll_add_packet_to_tx_fifo(PIPE_NUMBER, matrix, TX_PAYLOAD_LENGTH);
         /* ble_nus_string_send(&m_nus, data, 5); */
     }
 }
@@ -237,11 +177,9 @@ static void key_scan_handler(void * p_context)
 /*****************************************************************************/
 int main()
 {
-    // Initialize application timer.
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
-    app_timer_create(&m_key_scan_timer_id, APP_TIMER_MODE_REPEATED, key_scan_handler);
+
     // Set up the user interface (buttons and LEDs).
-    ui_init();
+    gpio_config();
 
     // Initialize Gazell.
     bool result_value = nrf_gzll_init(NRF_GZLL_MODE_DEVICE);
@@ -251,20 +189,18 @@ int main()
     result_value = nrf_gzll_set_max_tx_attempts(MAX_TX_ATTEMPTS);
     GAZELLE_ERROR_CODE_CHECK(result_value);
 
-    // Load data into TX queue.
-    m_data_payload[0] = input_get();
-
-    result_value = nrf_gzll_add_packet_to_tx_fifo(PIPE_NUMBER, m_data_payload, TX_PAYLOAD_LENGTH);
-    if (!result_value)
-    {
-        NRF_LOG_ERROR("TX fifo error \r\n");
-        NRF_LOG_FLUSH();
-    }
+    nrf_gzll_set_base_address_0(0x01020304);
 
     // Enable Gazell to start sending over the air.
     result_value = nrf_gzll_enable();
     GAZELLE_ERROR_CODE_CHECK(result_value);
 
+    nrf_drv_clock_init();
+    nrf_drv_clock_lfclk_request(NULL);
+
+    // Initialize application timer.
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+    app_timer_create(&m_key_scan_timer_id, APP_TIMER_MODE_REPEATED, key_scan_handler);
     app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
 
     while (1)
