@@ -25,6 +25,7 @@
  */
 #include "nrf_gzll.h"
 #include "bsp.h"
+#include "nrf_drv_clock.h"
 #include "app_timer.h"
 #include "app_error.h"
 #include "nrf_gzll_error.h"
@@ -49,7 +50,7 @@
 #define APP_TIMER_OP_QUEUE_SIZE 4 ///< Size of timer operation queues.
 
 #define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */
-#define UART_RX_BUF_SIZE                1                                         /**< UART RX buffer size. */
+#define UART_RX_BUF_SIZE                256                                         /**< UART RX buffer size. */
 
 #define KEY_SCAN_INTERVAL                APP_TIMER_TICKS(1, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 
@@ -117,32 +118,6 @@ static void output_present(uint8_t val)
         }
     }
 }
-
-
-/**
- * @brief Initialize the BSP modules.
- */
-/* static void ui_init(void) */
-/* { */
-/*     // Initialize application timer. */
-/*     APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL); */
-
-/*     // BSP initialization. */
-/*     uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS, */
-/*                                  APP_TIMER_TICKS(100, APP_TIMER_PRESCALER), */
-/*                                  NULL); */
-/*     APP_ERROR_CHECK(err_code); */
-
-/*     // Set up logger. */
-/*     err_code = NRF_LOG_INIT(NULL); */
-/*     APP_ERROR_CHECK(err_code); */
-
-/*     NRF_LOG_INFO("Gazell ACK payload example. Host mode.\r\n"); */
-/*     NRF_LOG_FLUSH(); */
-
-/*     bsp_board_leds_init(); */
-/* } */
-
 
 /*****************************************************************************/
 /** @name Gazell callback function definitions.  */
@@ -250,7 +225,6 @@ void send_consumer(uint16_t data)
 
 static void key_scan_handler(void * p_context)
 {
-    /* app_uart_put(1); */
     UNUSED_PARAMETER(p_context);
     keyboard_task();
 }
@@ -298,6 +272,16 @@ static void uart_init(void)
 }
 
 
+/**@brief Function for the Power manager.
+ */
+/* static void power_manage(void) */
+/* { */
+/*     uint32_t err_code = sd_app_evt_wait(); */
+
+/*     APP_ERROR_CHECK(err_code); */
+/* } */
+
+
 /*****************************************************************************/
 /**
  * @brief Main function.
@@ -306,8 +290,6 @@ static void uart_init(void)
 /*****************************************************************************/
 int main()
 {
-    // Set up the user interface.
-    /* ui_init(); */
     uart_init();
 
     // Initialize Gazell.
@@ -331,20 +313,21 @@ int main()
     keyboard_init();
     host_set_driver(&driver);
 
+    nrf_drv_clock_init();
+    nrf_drv_clock_lfclk_request(NULL);
+
     APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
     app_timer_create(&m_key_scan_timer_id, APP_TIMER_MODE_REPEATED, key_scan_handler);
     app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
 
     while (1)
     {
-        /* nrf_delay_ms(1000); */
-        /* app_uart_put(1); */
-        /* __WFE(); */
-        /* __SEV(); */
-        /* __WFE(); */ 
-        keyboard_task();
-        /* app_uart_put(1); */
-        nrf_delay_ms(1);
+        /* keyboard_task(); */
+        /* nrf_delay_ms(1); */
+        /* power_manage(); */
+        __SEV();
+        __WFE();
+        __WFE();
     }
 }
 
