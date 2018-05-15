@@ -27,14 +27,14 @@ const uint8_t keymaps[2][MATRIX_ROWS][MATRIX_COLS] = {
         TAB, Q,   W,   E,   R,   T,        Y,   U,   I,   O,   P,   LBRC,RBRC,BSPC, \
         LCTL,A,   S,   D,   F,   G,        H,   J,   K,   L,   SCLN,QUOT,ENT,  \
         LSFT,Z,   X,   C,   V,   B,        N,   M,   COMM,DOT, SLSH,LSFT, \
-           LALT,LGUI,LSFT,SPC, FN0,        FN0,LCTL, TAB,LALT),
+           LALT,LGUI,LSFT,SPC, FN0,        TAB,LCTL, FN0,LALT),
     /* 1: Fn */       
     KEYMAP(
         ESC,F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9, F10,   MINS,EQL, BSLS, GRV, \
         TAB, Q,   W, END,   R,   T,        Y,   U,   I,   O,   P,   LBRC,RBRC,BSPC, \
         LCTL,HOME,S,   D,   F,   G,     LEFT,DOWN,  UP,RGHT,   SCLN,QUOT,ENT,  \
         LSFT,Z,   X,   C,   V,   B,        N,   M,   COMM,DOT, SLSH,LSFT, \
-           LALT,LGUI,LSFT,SPC, FN0,        FN0,LCTL, TAB,LALT),
+           LALT,LGUI,LSFT,SPC, FN0,        TAB,LCTL, FN0,LALT),
 };
 
 const action_t PROGMEM fn_actions[] = {ACTION_LAYER_MOMENTARY(1)};

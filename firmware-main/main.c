@@ -220,7 +220,9 @@ APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. 
 
 static pm_peer_id_t m_peer_id;                              /**< Device reference handle to the current bonded central. */
 
-static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
+static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE},
+                                   {BLE_UUID_BATTERY_SERVICE,            BLE_UUID_TYPE_BLE},
+                                   {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}};
 
 /** List to enqueue not just data to be sent, but also related information like the handle, connection handle etc */
 static buffer_list_t buffer_list;
