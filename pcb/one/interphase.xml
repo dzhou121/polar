@@ -1,0 +1,1216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/Users/Lulu/interphase/left/interphase.sch</source>
+    <date>Wednesday, 11 April 2018 'amt' 08:06:31</date>
+    <tool>Eeschema 4.0.7</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>interphase.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="BT1">
+      <value>Battery_Cell</value>
+      <footprint>Battery_Holders:Keystone_106_1x20mm-CoinCell</footprint>
+      <libsource lib="device" part="Battery_Cell"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BBF201</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>MCP1640</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23-6</footprint>
+      <libsource lib="mcp1640" part="MCP1640"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFA9D7</tstamp>
+    </comp>
+    <comp ref="C1">
+      <value>4,7µF</value>
+      <footprint>Capacitors_SMD:C_0805_HandSoldering</footprint>
+      <libsource lib="interphase-rescue" part="C-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFAAF6</tstamp>
+    </comp>
+    <comp ref="L1">
+      <value>4,7µH</value>
+      <footprint>SMD_Packages:SMD-1206_Pol</footprint>
+      <libsource lib="device" part="L"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFAB7F</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>536K</value>
+      <footprint>Resistors_SMD:R_0805</footprint>
+      <libsource lib="interphase-rescue" part="R-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFABC2</tstamp>
+    </comp>
+    <comp ref="R2">
+      <value>309K</value>
+      <footprint>Resistors_SMD:R_0805</footprint>
+      <libsource lib="interphase-rescue" part="R-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFAC0F</tstamp>
+    </comp>
+    <comp ref="C2">
+      <value>10µF</value>
+      <footprint>Capacitors_SMD:C_0805_HandSoldering</footprint>
+      <libsource lib="interphase-rescue" part="C-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFAC64</tstamp>
+    </comp>
+    <comp ref="SW32">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB4E3</tstamp>
+    </comp>
+    <comp ref="SW27">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB5D8</tstamp>
+    </comp>
+    <comp ref="SW22">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB673</tstamp>
+    </comp>
+    <comp ref="SW17">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB70A</tstamp>
+    </comp>
+    <comp ref="SW12">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB77F</tstamp>
+    </comp>
+    <comp ref="SW7">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB7F0</tstamp>
+    </comp>
+    <comp ref="SW2">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFB879</tstamp>
+    </comp>
+    <comp ref="SW28">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBA92</tstamp>
+    </comp>
+    <comp ref="SW23">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBA9A</tstamp>
+    </comp>
+    <comp ref="SW18">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBAA2</tstamp>
+    </comp>
+    <comp ref="SW13">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBAAA</tstamp>
+    </comp>
+    <comp ref="SW8">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBAB2</tstamp>
+    </comp>
+    <comp ref="SW3">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.50u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFBABA</tstamp>
+    </comp>
+    <comp ref="SW29">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0BA</tstamp>
+    </comp>
+    <comp ref="SW24">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0C2</tstamp>
+    </comp>
+    <comp ref="SW19">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0CA</tstamp>
+    </comp>
+    <comp ref="SW14">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0D2</tstamp>
+    </comp>
+    <comp ref="SW9">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0DA</tstamp>
+    </comp>
+    <comp ref="SW4">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.75u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0E2</tstamp>
+    </comp>
+    <comp ref="SW30">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0F2</tstamp>
+    </comp>
+    <comp ref="SW25">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC0FA</tstamp>
+    </comp>
+    <comp ref="SW20">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC102</tstamp>
+    </comp>
+    <comp ref="SW15">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC10A</tstamp>
+    </comp>
+    <comp ref="SW5">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_2.25u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC11A</tstamp>
+    </comp>
+    <comp ref="SW21">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC364</tstamp>
+    </comp>
+    <comp ref="SW16">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.25u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC36C</tstamp>
+    </comp>
+    <comp ref="SW11">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.50u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC374</tstamp>
+    </comp>
+    <comp ref="D1">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFE840</tstamp>
+    </comp>
+    <comp ref="D6">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFE952</tstamp>
+    </comp>
+    <comp ref="D11">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFEA33</tstamp>
+    </comp>
+    <comp ref="D16">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFEB01</tstamp>
+    </comp>
+    <comp ref="D21">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFEBBA</tstamp>
+    </comp>
+    <comp ref="D26">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFEC74</tstamp>
+    </comp>
+    <comp ref="D31">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFED2F</tstamp>
+    </comp>
+    <comp ref="D2">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C1093A</tstamp>
+    </comp>
+    <comp ref="D7">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C109FC</tstamp>
+    </comp>
+    <comp ref="D3">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C10ACB</tstamp>
+    </comp>
+    <comp ref="D4">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C10BA9</tstamp>
+    </comp>
+    <comp ref="D8">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C10D48</tstamp>
+    </comp>
+    <comp ref="D10">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C10EF1</tstamp>
+    </comp>
+    <comp ref="D12">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C10FCA</tstamp>
+    </comp>
+    <comp ref="D13">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C110A6</tstamp>
+    </comp>
+    <comp ref="D14">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11185</tstamp>
+    </comp>
+    <comp ref="D15">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C1126F</tstamp>
+    </comp>
+    <comp ref="D20">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11350</tstamp>
+    </comp>
+    <comp ref="D19">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11436</tstamp>
+    </comp>
+    <comp ref="D18">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11521</tstamp>
+    </comp>
+    <comp ref="D17">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C1160F</tstamp>
+    </comp>
+    <comp ref="D22">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11702</tstamp>
+    </comp>
+    <comp ref="D23">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11806</tstamp>
+    </comp>
+    <comp ref="D24">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C118F7</tstamp>
+    </comp>
+    <comp ref="D25">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C119ED</tstamp>
+    </comp>
+    <comp ref="D29">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11DEF</tstamp>
+    </comp>
+    <comp ref="D28">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C11EF4</tstamp>
+    </comp>
+    <comp ref="D27">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C12002</tstamp>
+    </comp>
+    <comp ref="J1">
+      <value>Conn_01x04_Male</value>
+      <footprint>Pin_Headers:Pin_Header_Angled_1x04_Pitch2.54mm</footprint>
+      <libsource lib="conn" part="Conn_01x04_Male"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59C3A25B</tstamp>
+    </comp>
+    <comp ref="U1">
+      <value>Core51822B</value>
+      <footprint>Misc:Core51822(B)</footprint>
+      <libsource lib="core51822b" part="Core51822B"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59B7D1A9</tstamp>
+    </comp>
+    <comp ref="SW10">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ACC6B6E</tstamp>
+    </comp>
+    <comp ref="D9">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ACC7CE0</tstamp>
+    </comp>
+    <comp ref="SW26">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59BFC35C</tstamp>
+    </comp>
+    <comp ref="D30">
+      <value>D</value>
+      <footprint>Diodes_SMD:D_MiniMELF</footprint>
+      <libsource lib="interphase-rescue" part="D-RESCUE-interphase"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ACDE977</tstamp>
+    </comp>
+    <comp ref="SW31">
+      <value>MOM-SPST</value>
+      <footprint>Button_Switch_Keyboard:SW_Cherry_MX1A_1.00u_PCB</footprint>
+      <fields>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <libsource lib="switches" part="MOM-SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ACDEA5E</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="device" part="Battery_Cell">
+      <description>single battery cell</description>
+      <fields>
+        <field name="Reference">BT</field>
+        <field name="Value">Battery_Cell</field>
+      </fields>
+      <pins>
+        <pin num="1" name="+" type="passive"/>
+        <pin num="2" name="-" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="interphase-rescue" part="C-RESCUE-interphase">
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C-RESCUE-interphase</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="conn" part="Conn_01x04_Male">
+      <description>Generic connector, single row, 01x04</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_??x*mm*</fp>
+        <fp>Connector*:*1x??x*mm*</fp>
+        <fp>Pin?Header?Straight?1X*</fp>
+        <fp>Pin?Header?Angled?1X*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x04_Male</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="core51822b" part="Core51822B">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">Core51822B</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="BiDi"/>
+        <pin num="2" name="P21" type="BiDi"/>
+        <pin num="3" name="P22" type="BiDi"/>
+        <pin num="4" name="P23" type="BiDi"/>
+        <pin num="5" name="P24" type="BiDi"/>
+        <pin num="6" name="P25" type="BiDi"/>
+        <pin num="7" name="NC" type="BiDi"/>
+        <pin num="8" name="NC" type="BiDi"/>
+        <pin num="9" name="P28" type="BiDi"/>
+        <pin num="10" name="P29" type="BiDi"/>
+        <pin num="11" name="GND" type="BiDi"/>
+        <pin num="12" name="VCC" type="BiDi"/>
+        <pin num="13" name="P30" type="BiDi"/>
+        <pin num="14" name="P00" type="BiDi"/>
+        <pin num="15" name="P01" type="BiDi"/>
+        <pin num="16" name="P02" type="BiDi"/>
+        <pin num="17" name="P03" type="BiDi"/>
+        <pin num="18" name="P04" type="BiDi"/>
+        <pin num="19" name="P05" type="BiDi"/>
+        <pin num="20" name="P06" type="BiDi"/>
+        <pin num="21" name="P07" type="BiDi"/>
+        <pin num="22" name="P08" type="BiDi"/>
+        <pin num="23" name="P09" type="BiDi"/>
+        <pin num="24" name="P10" type="BiDi"/>
+        <pin num="25" name="P11" type="BiDi"/>
+        <pin num="26" name="P12" type="BiDi"/>
+        <pin num="27" name="P13" type="BiDi"/>
+        <pin num="28" name="P14" type="BiDi"/>
+        <pin num="29" name="P15" type="BiDi"/>
+        <pin num="30" name="P16" type="BiDi"/>
+        <pin num="31" name="SWDIO" type="BiDi"/>
+        <pin num="32" name="SWCLK" type="BiDi"/>
+        <pin num="33" name="P17" type="BiDi"/>
+        <pin num="34" name="P18" type="BiDi"/>
+        <pin num="35" name="P19" type="BiDi"/>
+        <pin num="36" name="P20" type="BiDi"/>
+      </pins>
+    </libpart>
+    <libpart lib="interphase-rescue" part="D-RESCUE-interphase">
+      <footprints>
+        <fp>TO-???*</fp>
+        <fp>*SingleDiode</fp>
+        <fp>*_Diode_*</fp>
+        <fp>*SingleDiode*</fp>
+        <fp>D_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">D-RESCUE-interphase</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="L">
+      <description>Inductor</description>
+      <footprints>
+        <fp>Choke_*</fp>
+        <fp>*Coil*</fp>
+        <fp>Inductor_*</fp>
+        <fp>L_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">L</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="mcp1640" part="MCP1640">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MCP1640</field>
+      </fields>
+      <pins>
+        <pin num="1" name="SW" type="input"/>
+        <pin num="2" name="GND" type="input"/>
+        <pin num="3" name="EN" type="input"/>
+        <pin num="4" name="VFB" type="input"/>
+        <pin num="5" name="VOUT" type="input"/>
+        <pin num="6" name="VIN" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="switches" part="MOM-SPST">
+      <description>Momentary SPST switch</description>
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">MOM-SPST</field>
+        <field name="Part">-</field>
+        <field name="Family">Switch</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="openCol"/>
+        <pin num="2" name="2" type="openCol"/>
+        <pin num="GND" name="GND" type="openCol"/>
+      </pins>
+    </libpart>
+    <libpart lib="interphase-rescue" part="R-RESCUE-interphase">
+      <footprints>
+        <fp>R_*</fp>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R-RESCUE-interphase</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="mcp1640">
+      <uri>/Users/Lulu/kicad_lib/kicadlib-master/library/mcp1640.lib</uri>
+    </library>
+    <library logical="core51822b">
+      <uri>/Users/Lulu/kicad_lib/misc.pretty/core51822b.lib</uri>
+    </library>
+    <library logical="switches">
+      <uri>/Users/Lulu/kicad_lib/kicad-library-master/library/switches.lib</uri>
+    </library>
+    <library logical="interphase-rescue">
+      <uri>/Users/Lulu/interphase/left/interphase-rescue.lib</uri>
+    </library>
+    <library logical="conn">
+      <uri>/Library/Application Support/kicad/library/conn.lib</uri>
+    </library>
+    <library logical="device">
+      <uri>/Library/Application Support/kicad/library/device.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(R1-Pad2)">
+      <node ref="U2" pin="4"/>
+      <node ref="R1" pin="2"/>
+      <node ref="R2" pin="1"/>
+    </net>
+    <net code="2" name="Net-(L1-Pad2)">
+      <node ref="U2" pin="1"/>
+      <node ref="L1" pin="2"/>
+    </net>
+    <net code="4" name="Net-(J1-Pad3)">
+      <node ref="J1" pin="3"/>
+      <node ref="U1" pin="31"/>
+    </net>
+    <net code="5" name="Net-(J1-Pad2)">
+      <node ref="J1" pin="2"/>
+      <node ref="U1" pin="32"/>
+    </net>
+    <net code="6" name="Net-(SW31-PadGND)">
+      <node ref="SW31" pin="GND"/>
+    </net>
+    <net code="7" name="Net-(D30-Pad2)">
+      <node ref="SW31" pin="2"/>
+      <node ref="D30" pin="2"/>
+    </net>
+    <net code="8" name="+BATT">
+      <node ref="U2" pin="3"/>
+      <node ref="BT1" pin="1"/>
+      <node ref="U2" pin="6"/>
+      <node ref="C1" pin="1"/>
+      <node ref="L1" pin="1"/>
+      <node ref="U1" pin="15"/>
+    </net>
+    <net code="9" name="Net-(D24-Pad2)">
+      <node ref="D24" pin="2"/>
+      <node ref="SW25" pin="2"/>
+    </net>
+    <net code="10" name="Net-(SW30-PadGND)">
+      <node ref="SW30" pin="GND"/>
+    </net>
+    <net code="11" name="Net-(D29-Pad2)">
+      <node ref="D29" pin="2"/>
+      <node ref="SW30" pin="2"/>
+    </net>
+    <net code="12" name="Net-(SW4-PadGND)">
+      <node ref="SW4" pin="GND"/>
+    </net>
+    <net code="13" name="Net-(D3-Pad2)">
+      <node ref="D3" pin="2"/>
+      <node ref="SW4" pin="2"/>
+    </net>
+    <net code="14" name="Net-(SW9-PadGND)">
+      <node ref="SW9" pin="GND"/>
+    </net>
+    <net code="15" name="Net-(D8-Pad2)">
+      <node ref="SW9" pin="2"/>
+      <node ref="D8" pin="2"/>
+    </net>
+    <net code="16" name="Net-(SW14-PadGND)">
+      <node ref="SW14" pin="GND"/>
+    </net>
+    <net code="17" name="Net-(D13-Pad2)">
+      <node ref="SW14" pin="2"/>
+      <node ref="D13" pin="2"/>
+    </net>
+    <net code="18" name="Net-(SW19-PadGND)">
+      <node ref="SW19" pin="GND"/>
+    </net>
+    <net code="19" name="Net-(D18-Pad2)">
+      <node ref="SW19" pin="2"/>
+      <node ref="D18" pin="2"/>
+    </net>
+    <net code="20" name="Net-(SW24-PadGND)">
+      <node ref="SW24" pin="GND"/>
+    </net>
+    <net code="21" name="Net-(D23-Pad2)">
+      <node ref="SW24" pin="2"/>
+      <node ref="D23" pin="2"/>
+    </net>
+    <net code="22" name="Net-(SW29-PadGND)">
+      <node ref="SW29" pin="GND"/>
+    </net>
+    <net code="23" name="Net-(D28-Pad2)">
+      <node ref="SW29" pin="2"/>
+      <node ref="D28" pin="2"/>
+    </net>
+    <net code="24" name="Net-(SW3-PadGND)">
+      <node ref="SW3" pin="GND"/>
+    </net>
+    <net code="25" name="Net-(D2-Pad2)">
+      <node ref="SW3" pin="2"/>
+      <node ref="D2" pin="2"/>
+    </net>
+    <net code="26" name="Net-(SW8-PadGND)">
+      <node ref="SW8" pin="GND"/>
+    </net>
+    <net code="27" name="Net-(D16-Pad2)">
+      <node ref="D16" pin="2"/>
+      <node ref="SW17" pin="2"/>
+    </net>
+    <net code="28" name="Net-(D11-Pad2)">
+      <node ref="D11" pin="2"/>
+      <node ref="SW12" pin="2"/>
+    </net>
+    <net code="29" name="Net-(D6-Pad2)">
+      <node ref="SW7" pin="2"/>
+      <node ref="D6" pin="2"/>
+    </net>
+    <net code="30" name="Net-(D1-Pad2)">
+      <node ref="D1" pin="2"/>
+      <node ref="SW2" pin="2"/>
+    </net>
+    <net code="31" name="Net-(SW11-PadGND)">
+      <node ref="SW11" pin="GND"/>
+    </net>
+    <net code="32" name="Net-(D10-Pad2)">
+      <node ref="SW11" pin="2"/>
+      <node ref="D10" pin="2"/>
+    </net>
+    <net code="33" name="Net-(SW16-PadGND)">
+      <node ref="SW16" pin="GND"/>
+    </net>
+    <net code="34" name="Net-(D15-Pad2)">
+      <node ref="D15" pin="2"/>
+      <node ref="SW16" pin="2"/>
+    </net>
+    <net code="35" name="Net-(SW21-PadGND)">
+      <node ref="SW21" pin="GND"/>
+    </net>
+    <net code="36" name="Net-(D20-Pad2)">
+      <node ref="SW21" pin="2"/>
+      <node ref="D20" pin="2"/>
+    </net>
+    <net code="37" name="Net-(SW5-PadGND)">
+      <node ref="SW5" pin="GND"/>
+    </net>
+    <net code="38" name="Net-(D4-Pad2)">
+      <node ref="D4" pin="2"/>
+      <node ref="SW5" pin="2"/>
+    </net>
+    <net code="39" name="Net-(SW15-PadGND)">
+      <node ref="SW15" pin="GND"/>
+    </net>
+    <net code="40" name="Net-(D14-Pad2)">
+      <node ref="D14" pin="2"/>
+      <node ref="SW15" pin="2"/>
+    </net>
+    <net code="41" name="Net-(SW20-PadGND)">
+      <node ref="SW20" pin="GND"/>
+    </net>
+    <net code="42" name="Net-(D19-Pad2)">
+      <node ref="D19" pin="2"/>
+      <node ref="SW20" pin="2"/>
+    </net>
+    <net code="43" name="Net-(SW25-PadGND)">
+      <node ref="SW25" pin="GND"/>
+    </net>
+    <net code="44" name="Net-(SW27-PadGND)">
+      <node ref="SW27" pin="GND"/>
+    </net>
+    <net code="45" name="Net-(D26-Pad2)">
+      <node ref="D26" pin="2"/>
+      <node ref="SW27" pin="2"/>
+    </net>
+    <net code="46" name="Net-(SW32-PadGND)">
+      <node ref="SW32" pin="GND"/>
+    </net>
+    <net code="47" name="Net-(D31-Pad2)">
+      <node ref="D31" pin="2"/>
+      <node ref="SW32" pin="2"/>
+    </net>
+    <net code="48" name="GND">
+      <node ref="U1" pin="1"/>
+      <node ref="U1" pin="11"/>
+      <node ref="BT1" pin="2"/>
+      <node ref="U2" pin="2"/>
+      <node ref="C1" pin="2"/>
+      <node ref="R2" pin="2"/>
+      <node ref="C2" pin="2"/>
+      <node ref="J1" pin="4"/>
+    </net>
+    <net code="49" name="+3V3">
+      <node ref="J1" pin="1"/>
+      <node ref="C2" pin="1"/>
+      <node ref="R1" pin="1"/>
+      <node ref="U2" pin="5"/>
+      <node ref="U1" pin="12"/>
+    </net>
+    <net code="50" name="Net-(D7-Pad2)">
+      <node ref="SW8" pin="2"/>
+      <node ref="D7" pin="2"/>
+    </net>
+    <net code="51" name="Net-(SW13-PadGND)">
+      <node ref="SW13" pin="GND"/>
+    </net>
+    <net code="52" name="Net-(D12-Pad2)">
+      <node ref="SW13" pin="2"/>
+      <node ref="D12" pin="2"/>
+    </net>
+    <net code="53" name="Net-(SW18-PadGND)">
+      <node ref="SW18" pin="GND"/>
+    </net>
+    <net code="54" name="Net-(D17-Pad2)">
+      <node ref="D17" pin="2"/>
+      <node ref="SW18" pin="2"/>
+    </net>
+    <net code="55" name="Net-(SW23-PadGND)">
+      <node ref="SW23" pin="GND"/>
+    </net>
+    <net code="56" name="Net-(D22-Pad2)">
+      <node ref="D22" pin="2"/>
+      <node ref="SW23" pin="2"/>
+    </net>
+    <net code="57" name="Net-(SW28-PadGND)">
+      <node ref="SW28" pin="GND"/>
+    </net>
+    <net code="58" name="Net-(D27-Pad2)">
+      <node ref="SW28" pin="2"/>
+      <node ref="D27" pin="2"/>
+    </net>
+    <net code="59" name="Net-(SW2-PadGND)">
+      <node ref="SW2" pin="GND"/>
+    </net>
+    <net code="60" name="Net-(SW7-PadGND)">
+      <node ref="SW7" pin="GND"/>
+    </net>
+    <net code="61" name="Net-(SW12-PadGND)">
+      <node ref="SW12" pin="GND"/>
+    </net>
+    <net code="62" name="Net-(SW17-PadGND)">
+      <node ref="SW17" pin="GND"/>
+    </net>
+    <net code="63" name="Net-(SW22-PadGND)">
+      <node ref="SW22" pin="GND"/>
+    </net>
+    <net code="64" name="Net-(D21-Pad2)">
+      <node ref="D21" pin="2"/>
+      <node ref="SW22" pin="2"/>
+    </net>
+    <net code="65" name="/col3">
+      <node ref="D19" pin="1"/>
+      <node ref="D18" pin="1"/>
+      <node ref="D20" pin="1"/>
+      <node ref="U1" pin="21"/>
+      <node ref="D16" pin="1"/>
+      <node ref="D17" pin="1"/>
+    </net>
+    <net code="66" name="Net-(U1-Pad30)">
+      <node ref="U1" pin="30"/>
+    </net>
+    <net code="67" name="/col2">
+      <node ref="U1" pin="20"/>
+      <node ref="D15" pin="1"/>
+      <node ref="D11" pin="1"/>
+      <node ref="D14" pin="1"/>
+      <node ref="D13" pin="1"/>
+      <node ref="D12" pin="1"/>
+    </net>
+    <net code="68" name="Net-(U1-Pad10)">
+      <node ref="U1" pin="10"/>
+    </net>
+    <net code="69" name="Net-(U1-Pad9)">
+      <node ref="U1" pin="9"/>
+    </net>
+    <net code="70" name="Net-(U1-Pad8)">
+      <node ref="U1" pin="8"/>
+    </net>
+    <net code="71" name="Net-(U1-Pad7)">
+      <node ref="U1" pin="7"/>
+    </net>
+    <net code="72" name="/row4">
+      <node ref="SW16" pin="1"/>
+      <node ref="SW11" pin="1"/>
+      <node ref="SW26" pin="1"/>
+      <node ref="SW21" pin="1"/>
+      <node ref="U1" pin="6"/>
+      <node ref="SW31" pin="1"/>
+    </net>
+    <net code="73" name="/row3">
+      <node ref="SW30" pin="1"/>
+      <node ref="U1" pin="5"/>
+      <node ref="SW25" pin="1"/>
+      <node ref="SW20" pin="1"/>
+      <node ref="SW15" pin="1"/>
+      <node ref="SW5" pin="1"/>
+      <node ref="SW10" pin="1"/>
+    </net>
+    <net code="74" name="/row2">
+      <node ref="SW4" pin="1"/>
+      <node ref="SW9" pin="1"/>
+      <node ref="SW14" pin="1"/>
+      <node ref="SW19" pin="1"/>
+      <node ref="U1" pin="4"/>
+      <node ref="SW24" pin="1"/>
+      <node ref="SW29" pin="1"/>
+    </net>
+    <net code="75" name="/row1">
+      <node ref="U1" pin="3"/>
+      <node ref="SW8" pin="1"/>
+      <node ref="SW13" pin="1"/>
+      <node ref="SW3" pin="1"/>
+      <node ref="SW18" pin="1"/>
+      <node ref="SW23" pin="1"/>
+      <node ref="SW28" pin="1"/>
+    </net>
+    <net code="76" name="/row0">
+      <node ref="U1" pin="2"/>
+      <node ref="SW22" pin="1"/>
+      <node ref="SW27" pin="1"/>
+      <node ref="SW32" pin="1"/>
+      <node ref="SW12" pin="1"/>
+      <node ref="SW17" pin="1"/>
+      <node ref="SW2" pin="1"/>
+      <node ref="SW7" pin="1"/>
+    </net>
+    <net code="77" name="Net-(SW26-PadGND)">
+      <node ref="SW26" pin="GND"/>
+    </net>
+    <net code="78" name="Net-(D25-Pad2)">
+      <node ref="SW26" pin="2"/>
+      <node ref="D25" pin="2"/>
+    </net>
+    <net code="79" name="Net-(D9-Pad2)">
+      <node ref="D9" pin="2"/>
+      <node ref="SW10" pin="2"/>
+    </net>
+    <net code="80" name="Net-(SW10-PadGND)">
+      <node ref="SW10" pin="GND"/>
+    </net>
+    <net code="81" name="Net-(U1-Pad29)">
+      <node ref="U1" pin="29"/>
+    </net>
+    <net code="82" name="/col1">
+      <node ref="D10" pin="1"/>
+      <node ref="D8" pin="1"/>
+      <node ref="D7" pin="1"/>
+      <node ref="D9" pin="1"/>
+      <node ref="D6" pin="1"/>
+      <node ref="U1" pin="19"/>
+    </net>
+    <net code="83" name="Net-(U1-Pad28)">
+      <node ref="U1" pin="28"/>
+    </net>
+    <net code="84" name="/col0">
+      <node ref="D1" pin="1"/>
+      <node ref="D4" pin="1"/>
+      <node ref="U1" pin="18"/>
+      <node ref="D3" pin="1"/>
+      <node ref="D2" pin="1"/>
+    </net>
+    <net code="85" name="Net-(U1-Pad27)">
+      <node ref="U1" pin="27"/>
+    </net>
+    <net code="86" name="Net-(U1-Pad17)">
+      <node ref="U1" pin="17"/>
+    </net>
+    <net code="87" name="Net-(U1-Pad36)">
+      <node ref="U1" pin="36"/>
+    </net>
+    <net code="88" name="Net-(U1-Pad26)">
+      <node ref="U1" pin="26"/>
+    </net>
+    <net code="89" name="Net-(U1-Pad16)">
+      <node ref="U1" pin="16"/>
+    </net>
+    <net code="90" name="Net-(U1-Pad35)">
+      <node ref="U1" pin="35"/>
+    </net>
+    <net code="91" name="Net-(U1-Pad25)">
+      <node ref="U1" pin="25"/>
+    </net>
+    <net code="92" name="Net-(U1-Pad34)">
+      <node ref="U1" pin="34"/>
+    </net>
+    <net code="93" name="/col6">
+      <node ref="U1" pin="24"/>
+      <node ref="D31" pin="1"/>
+    </net>
+    <net code="94" name="Net-(U1-Pad14)">
+      <node ref="U1" pin="14"/>
+    </net>
+    <net code="95" name="Net-(U1-Pad33)">
+      <node ref="U1" pin="33"/>
+    </net>
+    <net code="96" name="/col5">
+      <node ref="D27" pin="1"/>
+      <node ref="D28" pin="1"/>
+      <node ref="D29" pin="1"/>
+      <node ref="D26" pin="1"/>
+      <node ref="U1" pin="23"/>
+      <node ref="D30" pin="1"/>
+    </net>
+    <net code="97" name="Net-(U1-Pad13)">
+      <node ref="U1" pin="13"/>
+    </net>
+    <net code="98" name="/col4">
+      <node ref="D22" pin="1"/>
+      <node ref="D23" pin="1"/>
+      <node ref="D24" pin="1"/>
+      <node ref="U1" pin="22"/>
+      <node ref="D25" pin="1"/>
+      <node ref="D21" pin="1"/>
+    </net>
+  </nets>
+</export>
