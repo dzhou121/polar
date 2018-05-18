@@ -904,56 +904,20 @@ static uint32_t send_key_scan_press_release(ble_hids_t * p_hids,
                                             uint16_t   * p_actual_len)
 {
     uint32_t err_code;
-    uint16_t offset;
-    uint16_t data_len;
-    uint8_t  data[INPUT_REPORT_KEYS_MAX_LEN];
 
-    // HID Report Descriptor enumerates an array of size 6, the pattern hence shall not be any
-    // longer than this.
-    STATIC_ASSERT((INPUT_REPORT_KEYS_MAX_LEN - 2) == 6);
-
-    ASSERT(pattern_len <= (INPUT_REPORT_KEYS_MAX_LEN - 2));
-
-    offset   = pattern_offset;
-    data_len = pattern_len;
-
-    do
+    if (!m_in_boot_mode)
     {
-        // Reset the data buffer.
-        memset(data, 0, sizeof(data));
-
-        // Copy the scan code.
-        memcpy(data + SCAN_CODE_POS + offset, p_key_pattern + offset, data_len - offset);
-
-        if (bsp_button_is_pressed(SHIFT_BUTTON_ID))
-        {
-            data[MODIFIER_KEY_POS] |= SHIFT_KEY_CODE;
-        }
-
-        if (!m_in_boot_mode)
-        {
-            err_code = ble_hids_inp_rep_send(p_hids,
-                                             INPUT_REPORT_KEYS_INDEX,
-                                             INPUT_REPORT_KEYS_MAX_LEN,
-                                             data);
-        }
-        else
-        {
-            err_code = ble_hids_boot_kb_inp_rep_send(p_hids,
-                                                     INPUT_REPORT_KEYS_MAX_LEN,
-                                                     data);
-        }
-
-        if (err_code != NRF_SUCCESS)
-        {
-            break;
-        }
-
-        offset++;
+        err_code = ble_hids_inp_rep_send(&m_hids,
+                                         INPUT_REPORT_KEYS_INDEX,
+                                         INPUT_REPORT_KEYS_MAX_LEN,
+                                         p_key_pattern);
     }
-    while (offset <= data_len);
-
-    *p_actual_len = offset;
+    else
+    {
+        err_code = ble_hids_boot_kb_inp_rep_send(&m_hids,
+                                                 INPUT_REPORT_KEYS_MAX_LEN,
+                                                 p_key_pattern);
+    }
 
     return err_code;
 }
@@ -1046,7 +1010,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 {
     buffer_entry_t * p_element;
     uint32_t         err_code = NRF_SUCCESS;
-    uint16_t         actual_len;
+    uint16_t         actual_len = 0;
 
     if (BUFFER_LIST_EMPTY())
     {
@@ -1102,7 +1066,7 @@ static uint32_t buffer_dequeue(bool tx_flag)
 static void keys_send(uint8_t key_pattern_len, uint8_t * p_key_pattern)
 {
     uint32_t err_code;
-    uint16_t actual_len;
+    uint16_t actual_len = 0;
 
     err_code = send_key_scan_press_release(&m_hids,
                                            p_key_pattern,

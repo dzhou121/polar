@@ -89,7 +89,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory /Users/Lulu/nRF5_SDK_12/examples/polar/pcb/left/gerber))
+      (outputdirectory /Users/Lulu/nRF5_SDK_12/examples/polar/pcb/one/gerber))
   )
 
   (net 0 "")

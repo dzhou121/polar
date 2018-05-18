@@ -34,7 +34,7 @@ const uint8_t keymaps[2][MATRIX_ROWS][MATRIX_COLS] = {
         TRNS,       TRNS, TRNS,  END, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, \
         TRNS,       HOME, TRNS, TRNS, TRNS, TRNS, LEFT, DOWN,   UP, RGHT, TRNS, TRNS,       TRNS, \
         TRNS,       TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,             TRNS, \
-                    TRNS, TRNS, TRNS, TRNS, TRNS,  DEL, TRNS, TRNS, TRNS, TRNS                    ),
+                    TRNS, TRNS, TRNS,  TAB, TRNS,  DEL, TRNS, TRNS, TRNS, TRNS                    ),
 };
 
 const action_t PROGMEM fn_actions[] = {ACTION_LAYER_MOMENTARY(1)};
