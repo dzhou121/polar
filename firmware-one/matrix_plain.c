@@ -1,5 +1,6 @@
 #include "nrf_gpio.h"
 #include "matrix.h"
+#include "matrix_plain.h"
 
 #define DEBOUNCE	5
 
@@ -88,4 +89,17 @@ inline
 matrix_row_t matrix_get_row(uint8_t row)
 {
     return matrix[row];
+}
+
+void matrix_sleep_prepare(void)
+{
+    for (uint8_t i = 0; i < MATRIX_COLS; i++)
+    {
+        nrf_gpio_cfg_output((uint32_t)column_pin_array[i]);
+        nrf_gpio_pin_set((uint32_t)column_pin_array[i]);
+    }
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++)
+    {
+        nrf_gpio_cfg_sense_input((uint32_t)row_pin_array[i], NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
+    }
 }

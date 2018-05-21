@@ -59,6 +59,7 @@
 #include "host_driver.h"
 #include "bootmagic.h"
 #include "eeconfig.h"
+#include "matrix_plain.h"
 
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
@@ -86,6 +87,8 @@
 
 #define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE          4                                          /**< Size of timer operation queues. */
+
+#define KEYBOARD_SLEEP_SCAN_INTERVAL                APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 
 #define KEY_SCAN_INTERVAL                APP_TIMER_TICKS(1, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 
@@ -154,7 +157,9 @@
 
 #define MAX_KEYS_IN_ONE_REPORT           (INPUT_REPORT_KEYS_MAX_LEN - SCAN_CODE_POS) /**< Maximum number of key presses that can be sent in one Input Report. */
 
-#define BOOTMAGIC_KEY_ERASE_BOND        KC_E
+#define BOOTMAGIC_KEY_ERASE_BOND        KC_SPACE
+
+#define KEYBOARD_SLEEP_TIMEOUT           600
 
 
 /**Buffer queue access macros
@@ -229,6 +234,8 @@ APP_TIMER_DEF(m_battery_timer_id);                          /**< Battery timer. 
 
 APP_TIMER_DEF(m_key_scan_timer_id);                        
 
+APP_TIMER_DEF(m_keyboard_sleep_timer_id);
+
 static pm_peer_id_t m_peer_id;                              /**< Device reference handle to the current bonded central. */
 static bool         m_caps_on = false;                      /**< Variable to indicate if Caps Lock is turned on. */
 
@@ -237,6 +244,8 @@ static uint32_t       m_whitelist_peer_cnt;                                 /**<
 static bool           m_is_wl_changed;                                      /**< Indicates if the whitelist has been changed since last time it has been updated in the Peer Manager. */
 
 static bool       erase_bonds = false;
+
+static uint16_t sleep_timer_counter = 0;
 
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
 
@@ -273,6 +282,8 @@ static uint8_t m_caps_off_key_scan_str[] = /**< Key pattern to be sent when the 
 
 /** List to enqueue not just data to be sent, but also related information like the handle, connection handle etc */
 static buffer_list_t buffer_list;
+
+static void sleep_mode_enter(void);
 
 static void on_hids_evt(ble_hids_t * p_hids, ble_hids_evt_t * p_evt);
 
@@ -378,7 +389,12 @@ void eeconfig_write_keymap(uint8_t val)
 
 void hook_layer_change(uint32_t layer_state) {}
 void hook_default_layer_change(uint32_t default_layer_state) {}
-void hook_matrix_change(keyevent_t event) {}
+
+void hook_matrix_change(keyevent_t event)
+{
+    sleep_timer_counter = 0;
+}
+
 void hook_keyboard_loop(void) {}
 void hook_keyboard_leds_change(uint8_t led_status) {}
 void hook_bootmagic(void)
@@ -416,6 +432,17 @@ void send_system(uint16_t data)
 void send_consumer(uint16_t data)
 {
     // may support in future.
+}
+
+
+static void keyboard_sleep_timeout_handler(void *p_context)
+{
+    sleep_timer_counter++;
+    if (sleep_timer_counter >= KEYBOARD_SLEEP_TIMEOUT)
+    {
+        sleep_timer_counter = 0;
+        sleep_mode_enter();
+    }
 }
 
 
@@ -652,6 +679,11 @@ static void timers_init(void)
     err_code = app_timer_create(&m_key_scan_timer_id,
                                 APP_TIMER_MODE_REPEATED,
                                 key_scan_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&m_keyboard_sleep_timer_id,
+                                APP_TIMER_MODE_REPEATED,
+                                keyboard_sleep_timeout_handler);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -930,6 +962,9 @@ static void timers_start(void)
     APP_ERROR_CHECK(err_code);
 
     err_code = app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_start(m_keyboard_sleep_timer_id, KEYBOARD_SLEEP_SCAN_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -1231,6 +1266,8 @@ static void sleep_mode_enter(void)
     // Prepare wakeup buttons.
     err_code = bsp_btn_ble_sleep_mode_prepare();
     APP_ERROR_CHECK(err_code);
+
+    matrix_sleep_prepare();
 
     // Go to system-off mode (this function will not return; wakeup will cause a reset).
     err_code = sd_power_system_off();
