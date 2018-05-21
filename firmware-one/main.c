@@ -55,7 +55,10 @@
 #include "ble_conn_state.h"
 #include "keyboard.h"
 #include "host.h"
+#include "hook.h"
 #include "host_driver.h"
+#include "bootmagic.h"
+#include "eeconfig.h"
 
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
@@ -78,11 +81,13 @@
 #define KEY_PRESS_BUTTON_ID              0                                          /**< Button used as Keyboard key press. */
 #define SHIFT_BUTTON_ID                  1                                          /**< Button used as 'SHIFT' Key. */
 
-#define DEVICE_NAME                      "Nordic_Keyboard"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                      "Polar Keyboard"                          /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define APP_TIMER_PRESCALER              0                                          /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE          4                                          /**< Size of timer operation queues. */
+
+#define KEY_SCAN_INTERVAL                APP_TIMER_TICKS(1, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 
 #define BATTERY_LEVEL_MEAS_INTERVAL      APP_TIMER_TICKS(2000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
 #define MIN_BATTERY_LEVEL                81                                         /**< Minimum simulated battery level. */
@@ -148,6 +153,8 @@
 #define SHIFT_KEY_CODE                   0x02                                        /**< Key code indicating the press of the Shift Key. */
 
 #define MAX_KEYS_IN_ONE_REPORT           (INPUT_REPORT_KEYS_MAX_LEN - SCAN_CODE_POS) /**< Maximum number of key presses that can be sent in one Input Report. */
+
+#define BOOTMAGIC_KEY_ERASE_BOND        KC_E
 
 
 /**Buffer queue access macros
@@ -228,6 +235,8 @@ static bool         m_caps_on = false;                      /**< Variable to ind
 static pm_peer_id_t   m_whitelist_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];  /**< List of peers currently in the whitelist. */
 static uint32_t       m_whitelist_peer_cnt;                                 /**< Number of peers currently in the whitelist. */
 static bool           m_is_wl_changed;                                      /**< Indicates if the whitelist has been changed since last time it has been updated in the Peer Manager. */
+
+static bool       erase_bonds = false;
 
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
 
@@ -321,6 +330,62 @@ static void peer_list_get(pm_peer_id_t * p_peers, uint32_t * p_size)
     {
         p_peers[(*p_size)++] = peer_id;
         peer_id = pm_next_peer_id_get(peer_id);
+    }
+}
+
+bool eeconfig_is_enabled(void)
+{
+    return false;
+}
+
+void eeconfig_init(void)
+{
+}
+
+void eeconfig_enable(void)
+{
+}
+
+void eeconfig_disable(void)
+{ 
+}
+
+uint8_t eeconfig_read_debug(void)
+{
+    return 0;
+}
+
+void eeconfig_write_debug(uint8_t val)
+{
+}
+
+uint8_t eeconfig_read_default_layer(void)
+{
+    return 0;
+}
+
+void eeconfig_write_default_layer(uint8_t val)
+{
+}
+
+uint8_t eeconfig_read_keymap(void)
+{
+    return 0;
+}
+void eeconfig_write_keymap(uint8_t val)
+{
+}
+
+void hook_layer_change(uint32_t layer_state) {}
+void hook_default_layer_change(uint32_t default_layer_state) {}
+void hook_matrix_change(keyevent_t event) {}
+void hook_keyboard_loop(void) {}
+void hook_keyboard_leds_change(uint8_t led_status) {}
+void hook_bootmagic(void)
+{
+    if(bootmagic_scan_key(BOOTMAGIC_KEY_ERASE_BOND))
+    {
+        erase_bonds = true;
     }
 }
 
@@ -862,6 +927,9 @@ static void timers_start(void)
     uint32_t err_code;
 
     err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_start(m_key_scan_timer_id, KEY_SCAN_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -1562,7 +1630,7 @@ static void bsp_event_handler(bsp_event_t event)
  * @param[in] erase_bonds  Indicates whether bonding information should be cleared from
  *                         persistent storage during initialization of the Peer Manager.
  */
-static void peer_manager_init(bool erase_bonds)
+static void peer_manager_init()
 {
     ble_gap_sec_params_t sec_param;
     ret_code_t           err_code;
@@ -1645,7 +1713,7 @@ static void advertising_init(void)
  *
  * @param[out] p_erase_bonds  Will be true if the clear bonding button was pressed to wake the application up.
  */
-static void buttons_leds_init(bool * p_erase_bonds)
+static void buttons_leds_init()
 {
     bsp_event_t startup_event;
 
@@ -1657,8 +1725,6 @@ static void buttons_leds_init(bool * p_erase_bonds)
 
     err_code = bsp_btn_ble_init(NULL, &startup_event);
     APP_ERROR_CHECK(err_code);
-
-    *p_erase_bonds = (startup_event == BSP_EVENT_CLEAR_BONDING_DATA);
 }
 
 
@@ -1676,7 +1742,6 @@ static void power_manage(void)
  */
 int main(void)
 {
-    bool     erase_bonds;
     uint32_t err_code;
 
     // Initialize.
@@ -1684,23 +1749,20 @@ int main(void)
     APP_ERROR_CHECK(err_code);
 
     timers_init();
-    buttons_leds_init(&erase_bonds);
+    buttons_leds_init();
     ble_stack_init();
     scheduler_init();
-    peer_manager_init(erase_bonds);
-    if (erase_bonds == true)
-    {
-        NRF_LOG_INFO("Bonds erased!\r\n");
-    }
+
+    keyboard_init();
+    host_set_driver(&driver);
+
+    peer_manager_init();
     gap_params_init();
     advertising_init();
     services_init();
     sensor_simulator_init();
     conn_params_init();
     buffer_init();
-
-    keyboard_init();
-    host_set_driver(&driver);
 
     // Start execution.
     NRF_LOG_INFO("HID Keyboard Start!\r\n");

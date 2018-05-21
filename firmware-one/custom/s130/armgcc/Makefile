@@ -78,8 +78,8 @@ SRC_FILES += \
   $(TMK_ROOT)/common/print.c \
   $(TMK_ROOT)/common/host.c \
   $(TMK_ROOT)/common/matrix.c \
-  $(TMK_ROOT)/common/hook.c \
   $(TMK_ROOT)/common/action.c \
+  $(TMK_ROOT)/common/bootmagic.c \
   $(TMK_ROOT)/common/keyboard.c \
 
 # Include folders common to all targets
@@ -212,6 +212,7 @@ CFLAGS += -DMATRIX_COLS=15
 CFLAGS += -DMATRIX_ROWS=5
 CFLAGS += -DNO_PRINT
 CFLAGS += -DNO_DEBUG
+CFLAGS += -DBOOTMAGIC_ENABLE
 
 # C++ flags common to all targets
 CXXFLAGS += \
@@ -230,6 +231,7 @@ ASMFLAGS += -DMATRIX_COLS=15
 ASMFLAGS += -DMATRIX_ROWS=5
 ASMFLAGS += -DNO_PRINT
 ASMFLAGS += -DNO_DEBUG
+ASMFLAGS += -DBOOTMAGIC_ENABLE
 
 # Linker flags
 LDFLAGS += -mthumb -mabi=aapcs -L $(TEMPLATE_PATH) -T$(LINKER_SCRIPT)

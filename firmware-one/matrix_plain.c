@@ -1,6 +1,5 @@
 #include "nrf_gpio.h"
 #include "matrix.h"
-#include "main.h"
 
 #define DEBOUNCE	5
 
@@ -49,10 +48,21 @@ static matrix_row_t read_cols(uint8_t row)
     return result;
 }
 
+static inline void delay_30ns(void)
+{
+#ifdef __GNUC__
+#define __nop() __asm("NOP")
+#endif
+    for(int i=0; i<60; i++) {
+        __nop();
+    } 
+}
+
 uint8_t matrix_scan(void)
 {
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         select_row(i);
+        delay_30ns();
         matrix_row_t cols = read_cols(i);
         if (matrix_debouncing[i] != cols) {
             matrix_debouncing[i] = cols;
