@@ -1810,10 +1810,7 @@ int main(void)
     for (;;)
     {
         app_sched_execute();
-        if (NRF_LOG_PROCESS() == false)
-        {
-            power_manage();
-        }
+        power_manage();
     }
 }
 
